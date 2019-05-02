@@ -4,6 +4,8 @@
 #include <openpose/core/common.hpp>
 #include <openpose/thread/worker.hpp>
 
+#include <iostream>
+
 namespace op
 {
     template<typename TDatums, typename TWorker = std::shared_ptr<Worker<TDatums>>>
@@ -45,16 +47,19 @@ namespace op
     SubThread<TDatums, TWorker>::SubThread(const std::vector<TWorker>& tWorkers) :
         mTWorkers{tWorkers}
     {
+        // std::cout << "subThread:: SubThread(...) constructor\n";
     }
 
     template<typename TDatums, typename TWorker>
     SubThread<TDatums, TWorker>::~SubThread()
     {
+        // std::cout << "subThread:: ~SubThread() constructor\n";
     }
 
     template<typename TDatums, typename TWorker>
     bool SubThread<TDatums, TWorker>::workTWorkers(TDatums& tDatums, const bool inputIsRunning)
-    {
+    {   
+        // std::cout << "subThread:: workTWorkers(...)\n";
         try
         {
             // If !inputIsRunning -> try to close TWorkers
@@ -140,6 +145,7 @@ namespace op
     template<typename TDatums, typename TWorker>
     void SubThread<TDatums, TWorker>::initializationOnThread()
     {
+        // std::cout << "subThread:: initializationOnThread()\n";
         try
         {
             for (auto& tWorker : mTWorkers)

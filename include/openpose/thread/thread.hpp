@@ -6,6 +6,8 @@
 #include <openpose/thread/subThread.hpp>
 #include <openpose/thread/worker.hpp>
 
+#include <iostream>
+
 namespace op
 {
     template<typename TDatums, typename TWorker = std::shared_ptr<Worker<TDatums>>>
@@ -66,12 +68,14 @@ namespace op
     Thread<TDatums, TWorker>::Thread(const std::shared_ptr<std::atomic<bool>>& isRunningSharedPtr) :
         spIsRunning{(isRunningSharedPtr != nullptr ? isRunningSharedPtr : std::make_shared<std::atomic<bool>>(false))}
     {
+        // std::cout << "thread:: Thread(.1.) constructor\n";
     }
 
     template<typename TDatums, typename TWorker>
     Thread<TDatums, TWorker>::Thread(Thread<TDatums, TWorker>&& t) :
         spIsRunning{std::make_shared<std::atomic<bool>>(t.spIsRunning->load())}
     {
+        // std::cout << "thread:: Thread(.2.) constructor\n";
         std::swap(mSubThreads, t.mSubThreads);
         std::swap(mThread, t.mThread);
     }
@@ -88,6 +92,7 @@ namespace op
     template<typename TDatums, typename TWorker>
     Thread<TDatums, TWorker>::~Thread()
     {
+        // std::cout << "thread:: ~Thread()\n";
         try
         {
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
@@ -132,6 +137,7 @@ namespace op
     template<typename TDatums, typename TWorker>
     void Thread<TDatums, TWorker>::startInThread()
     {
+        // std::cout << "thread:: startInThread()\n";
         try
         {
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
@@ -162,6 +168,7 @@ namespace op
     template<typename TDatums, typename TWorker>
     void Thread<TDatums, TWorker>::initializationOnThread()
     {
+        // std::cout << "thread:: initializationOnThread()\n";
         try
         {
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
@@ -177,6 +184,7 @@ namespace op
     template<typename TDatums, typename TWorker>
     void Thread<TDatums, TWorker>::threadFunction()
     {
+        // std::cout << "thread:: threadFunction()\n";
         try
         {
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
@@ -187,7 +195,10 @@ namespace op
             {
                 bool allSubThreadsClosed = true;
                 for (auto& subThread : mSubThreads)
+                {
+                    // std::cout << "---->!subThread->work()\n";
                     allSubThreadsClosed &= !subThread->work();
+                }
 
                 if (allSubThreadsClosed)
                 {
@@ -220,6 +231,7 @@ namespace op
     template<typename TDatums, typename TWorker>
     void Thread<TDatums, TWorker>::join()
     {
+        // std::cout << "thread:: join()\n";
         try
         {
             if (mThread.joinable())

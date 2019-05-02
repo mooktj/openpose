@@ -9,6 +9,42 @@
 #include <openpose/thread/queue.hpp>
 #include <openpose/thread/thread.hpp>
 #include <openpose/thread/worker.hpp>
+#include <iostream>
+#include <type_traits>
+#include <typeinfo>
+#include <cstdlib>
+#include <memory>
+#include <string>
+#ifndef _MSC_VER
+#   include <cxxabi.h>
+#endif
+
+template <class T>
+std::string
+type_name()
+{
+    typedef typename std::remove_reference<T>::type TR;
+    std::unique_ptr<char, void(*)(void*)> own
+           (
+#ifndef _MSC_VER
+                abi::__cxa_demangle(typeid(TR).name(), nullptr,
+                                           nullptr, nullptr),
+#else
+                nullptr,
+#endif
+                std::free
+           );
+    std::string r = own != nullptr ? own.get() : typeid(TR).name();
+    if (std::is_const<TR>::value)
+        r += " const";
+    if (std::is_volatile<TR>::value)
+        r += " volatile";
+    if (std::is_lvalue_reference<T>::value)
+        r += "&";
+    else if (std::is_rvalue_reference<T>::value)
+        r += "&&";
+    return r;
+}
 
 namespace op
 {
@@ -110,11 +146,13 @@ namespace op
         spIsRunning{std::make_shared<std::atomic<bool>>(false)},
         mDefaultMaxSizeQueues{-1ll}
     {
+        // std::cout << "threadManager:: ThreadManager(...) constructor \n";
     }
 
     template<typename TDatums, typename TWorker, typename TQueue>
     ThreadManager<TDatums, TWorker, TQueue>::~ThreadManager()
     {
+        // std::cout << "threadManager:: ~ThreadManager() constructor \n";
     }
 
     template<typename TDatums, typename TWorker, typename TQueue>
@@ -180,6 +218,7 @@ namespace op
     template<typename TDatums, typename TWorker, typename TQueue>
     void ThreadManager<TDatums, TWorker, TQueue>::exec()
     {
+        // std::cout << "threadManager:: exec()\n";
         try
         {
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
@@ -206,6 +245,7 @@ namespace op
     template<typename TDatums, typename TWorker, typename TQueue>
     void ThreadManager<TDatums, TWorker, TQueue>::start()
     {
+        // std::cout << "threadManager:: start()\n";
         try
         {
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
@@ -342,6 +382,7 @@ namespace op
     template<typename TDatums, typename TWorker, typename TQueue>
     bool ThreadManager<TDatums, TWorker, TQueue>::waitAndPop(TDatums& tDatums)
     {
+        // std::cout << "ThreadManager:: waitAndPop(tDatums)" << "\n";
         try
         {
             if (mThreadManagerMode != ThreadManagerMode::Asynchronous
@@ -349,6 +390,8 @@ namespace op
                 error("Not available for this ThreadManagerMode.", __LINE__, __FUNCTION__, __FILE__);
             if (mTQueues.empty())
                 error("ThreadManager already stopped or not started yet.", __LINE__, __FUNCTION__, __FILE__);
+            // std::cout << "type_name<decltype(*mTQueues.rbegin())>() is " << type_name<decltype(*mTQueues.rbegin())>() << "\n";
+            // std::cout << "type_name<decltype(mTQueues)>()" << type_name<decltype(mTQueues)>() << "\n";
             return (*mTQueues.rbegin())->waitAndPop(tDatums);
         }
         catch (const std::exception& e)
@@ -362,6 +405,7 @@ namespace op
     void ThreadManager<TDatums, TWorker, TQueue>::add(const std::vector<std::tuple<unsigned long long, std::vector<TWorker>,
                                                                                    unsigned long long, unsigned long long>>& threadWorkerQueues)
     {
+        // std::cout << "threadManager:: add(...) 1\n";
         try
         {
             for (const auto& threadWorkerQueue : threadWorkerQueues)
@@ -377,6 +421,7 @@ namespace op
     void ThreadManager<TDatums, TWorker, TQueue>::add(const std::vector<std::tuple<unsigned long long, TWorker, unsigned long long,
                                                                                    unsigned long long>>& threadWorkerQueues)
     {
+        // std::cout << "threadManager:: add(...) 2\n";
         try
         {
             for (const auto& threadWorkerQueue : threadWorkerQueues)

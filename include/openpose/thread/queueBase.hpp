@@ -6,6 +6,8 @@
 #include <queue> // std::queue & std::priority_queue
 #include <openpose/core/common.hpp>
 
+#include <iostream>
+
 namespace op
 {
     template<typename TDatums, typename TQueue>
@@ -102,12 +104,14 @@ namespace op
         mPushIsStopped{false},
         mMaxSize{maxSize}
     {
+        // std::cout << "queueBase:: QueueBase(...) constructor\n";
     }
 
     // Virutal destructor
     template<typename TDatums, typename TQueue>
     QueueBase<TDatums, TQueue>::~QueueBase()
     {
+        // std::cout << "queueBase:: ~QueueBase() constructor\n";
         try
         {
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
@@ -253,6 +257,7 @@ namespace op
     template<typename TDatums, typename TQueue>
     bool QueueBase<TDatums, TQueue>::waitAndPop(TDatums& tDatums)
     {
+        // std::cout << "QueueBase:: waitAndPop(tDatums)" << "\n";
         try
         {
             std::unique_lock<std::mutex> lock{mMutex};

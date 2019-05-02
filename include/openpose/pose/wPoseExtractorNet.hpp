@@ -61,6 +61,7 @@ namespace op
     template<typename TDatums>
     void WPoseExtractorNet<TDatums>::work(TDatums& tDatums)
     {
+        // std::cout << "wPoseExtractorNet:: work(tDatums)\n";
         try
         {
             if (checkNoNullNorEmpty(tDatums))
@@ -86,6 +87,7 @@ namespace op
                 Profiler::printAveragedTimeMsOnIterationX(profilerKey, __LINE__, __FUNCTION__, __FILE__);
                 // Debugging log
                 dLog("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
+                // std::cout << "---->forwardPassed successful\n";
             }
         }
         catch (const std::exception& e)

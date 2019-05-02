@@ -2,6 +2,7 @@
 #define OPENPOSE_THREAD_WORKER_HPP
 
 #include <openpose/core/common.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -57,16 +58,19 @@ namespace op
     Worker<TDatums>::Worker() :
         mIsRunning{true}
     {
+        // std::cout << "worker:: Worker() constructor\n";
     }
 
     template<typename TDatums>
     Worker<TDatums>::~Worker()
     {
+        // std::cout << "worker:: ~Worker() constructor\n";
     }
 
     template<typename TDatums>
     void Worker<TDatums>::initializationOnThreadNoException()
     {
+        // std::cout << "worker:: initializationOnThreadNoException()\n";
         try
         {
             this->initializationOnThread();
@@ -81,6 +85,7 @@ namespace op
     template<typename TDatums>
     bool Worker<TDatums>::checkAndWork(TDatums& tDatums)
     {
+        // std::cout << "worker:: checkAndWork(tDatums)\n";
         try
         {
             if (mIsRunning)

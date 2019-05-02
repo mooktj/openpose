@@ -9,6 +9,9 @@
 #include <openpose/utilities/fastMath.hpp>
 #include <openpose/producer/producer.hpp>
 
+#include <iostream>
+#include <string>
+
 namespace op
 {
     template<typename TDatum>
@@ -162,6 +165,7 @@ namespace op
                         else
                             error(commonMessage, __LINE__, __FUNCTION__, __FILE__);
                     }
+                    // std::cout << "DatumProducer:: datumPtr->cvOutputData is empty? " << datumPtr->cvOutputData.empty() << "\n";
                     datumPtr->cvOutputData = datumPtr->cvInputData;
                     // Resize if it's stereo-system
                     if (datums->size() > 1)

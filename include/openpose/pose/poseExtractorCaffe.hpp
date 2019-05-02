@@ -10,6 +10,7 @@
 #include <openpose/net/resizeAndMergeCaffe.hpp>
 #include <openpose/pose/enumClasses.hpp>
 #include <openpose/pose/poseExtractorNet.hpp>
+#include <iostream>
 
 namespace op
 {

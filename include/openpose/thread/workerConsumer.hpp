@@ -4,6 +4,8 @@
 #include <openpose/core/common.hpp>
 #include <openpose/thread/worker.hpp>
 
+#include <iostream>
+
 namespace op
 {
     template<typename TDatums>
@@ -29,14 +31,19 @@ namespace op
     template<typename TDatums>
     WorkerConsumer<TDatums>::~WorkerConsumer()
     {
+        std::cout << "workerConsumer:: ~WorkerConsumer()\n";
     }
 
     template<typename TDatums>
     void WorkerConsumer<TDatums>::work(TDatums& tDatums)
     {
+        std::cout << "workerConsumer:: work(...)\n";
         try
         {
+            std::cout << "---->workerConsumer:: going in workConsumer(...)\n";
             workConsumer(tDatums);
+            std::cout << "---->workerConsumer:: going out workConsumer(...)\n";
+
         }
         catch (const std::exception& e)
         {

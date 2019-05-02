@@ -36,6 +36,7 @@ namespace op
     Queue<TDatums, TQueue>::Queue(const long long maxSize) :
         QueueBase<TDatums, TQueue>{maxSize}
     {
+        // std::cout << "queue:: Queue(...) constructor\n";
         // Check TDatums = underlying value type of TQueue
         typedef typename TQueue::value_type underlyingValueType;
         static_assert(std::is_same<TDatums, underlyingValueType>::value,
@@ -45,6 +46,7 @@ namespace op
     template<typename TDatums, typename TQueue>
     Queue<TDatums, TQueue>::~Queue()
     {
+        // std::cout << "queue:: ~Queue() constructor\n";
     }
 
     template<typename TDatums, typename TQueue>
@@ -65,6 +67,7 @@ namespace op
     template<typename TDatums, typename TQueue>
     bool Queue<TDatums, TQueue>::pop(TDatums& tDatums)
     {
+        // std::cout << "Queue:: pop(tDatums)" << "\n";
         try
         {
             if (this->mPopIsStopped || this->mTQueue.empty())

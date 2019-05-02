@@ -1,5 +1,8 @@
 #include <limits> // std::numeric_limits
 #include <openpose/gpu/cuda.hpp>
+#ifdef USE_CUDA
+    #include <openpose/gpu/cuda.hu>
+#endif
 #include <openpose/pose/poseParameters.hpp>
 #include <openpose/utilities/check.hpp>
 #include <openpose/utilities/fastMath.hpp>
@@ -75,6 +78,7 @@ namespace op
             const PoseModel poseModel, const int gpuId, const std::string& modelFolder,
             const std::string& protoTxtPath, const std::string& caffeModelPath, const bool enableGoogleLogging)
         {
+            // std::cout << "poseExtractorCaffe:: addCaffeNetOnThread(...)\n";
             try
             {
                 // Add Caffe Net
@@ -90,6 +94,8 @@ namespace op
                 //         gpuId));
                 // UNUSED(enableGoogleLogging);
                 // Initializing them on the thread
+                // std::cout << "---->protoTxtPath: " << protoTxtPath << "\n";
+
                 net.back()->initializationOnThread();
                 caffeNetOutputBlob.emplace_back((net.back().get())->getOutputBlobArray());
                 // Sanity check
@@ -112,6 +118,7 @@ namespace op
         const std::vector<HeatMapType>& heatMapTypes, const ScaleMode heatMapScaleMode, const bool addPartCandidates,
         const bool maximizePositives, const std::string& protoTxtPath, const std::string& caffeModelPath,
         const float upsamplingRatio, const bool enableNet, const bool enableGoogleLogging) :
+
         PoseExtractorNet{poseModel, heatMapTypes, heatMapScaleMode, addPartCandidates, maximizePositives},
         mPoseModel{poseModel},
         mGpuId{gpuId},
@@ -129,9 +136,12 @@ namespace op
             spMaximumCaffe{(TOP_DOWN_REFINEMENT ? std::make_shared<MaximumCaffe<float>>() : nullptr)}
         #endif
     {
+        // std::cout << "poseExtractorCaffe:: PoseExtractorCaffe(...) constructor\n";
         try
         {
+            // std::cout << "---->mProtoTxtPath: " << mProtoTxtPath << "\n";
             #ifdef USE_CAFFE
+                // std::cout << "---->poseExtractorCaffe:: USE_CAFFE\n";
                 // Layers parameters
                 spBodyPartConnectorCaffe->setPoseModel(mPoseModel);
                 spBodyPartConnectorCaffe->setMaximizePositives(maximizePositives);
@@ -162,6 +172,7 @@ namespace op
 
     void PoseExtractorCaffe::netInitializationOnThread()
     {
+        // std::cout << "poseExtractorCaffe:: netInitializationOnThread()\n";
         try
         {
             #ifdef USE_CAFFE
@@ -188,6 +199,7 @@ namespace op
                 #endif
                 // Logging
                 log("Finished initialization on thread.", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
+                // std::cout << "---->USE_CAFFE enabled! and netinitializationOnThread successful\n";
             #endif
         }
         catch (const std::exception& e)
@@ -200,15 +212,53 @@ namespace op
         const std::vector<Array<float>>& inputNetData, const Point<int>& inputDataSize,
         const std::vector<double>& scaleInputToNetInputs, const Array<float>& poseNetOutput)
     {
+        // std::cout << "\n";
+        // std::cout << "\n";
+        // std::cout << "*****************************************************************************************************\n";
+        // std::cout << "*****************************************************************************************************\n";
+        // std::cout << "poseExtractorCaffe:: forwardPass(inputNetData, inputDataSize, scaleInputToNetInputs, poseNetOutput)\n";
         try
         {
             #ifdef USE_CAFFE
+                // const auto REPS = 1;
+                // double timeNormalize1 = 0.;
+                // double timeNormalize2 = 0.;
+                // double timeNormalize3 = 0.;
+                // double timeNormalize4 = 0.;
+                // OP_CUDA_PROFILE_INIT(REPS);
+
+                // std::cout << "              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~\n";
+                // std::cout << "---->poseExtractorCaffe:: spNets = " << spNets.size() << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spResizeAndMergeCaffe = " << spResizeAndMergeCaffe.get()->mBottomSizes << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spNmsCaffe = " << spNmsCaffe << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spBodyPartConnectorCaffe = " << spBodyPartConnectorCaffe << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spMaximumCaffe = " << spMaximumCaffe << "\n";
+                // std::cout << "---->poseExtractorCaffe:: mNetInput4DSizes.size() = " << mNetInput4DSizes.size() << "\n";
+
+
+                // // std::cout << "---->poseExtractorCaffe:: spCaffeNetOutputBlobs = " << spCaffeNetOutputBlobs.size() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = " << spHeatMapsBlob.get()->shape_string() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = " << spHeatMapsBlob.get()->num_axes() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob count() = " << spHeatMapsBlob.get()->count() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob num() = " << spHeatMapsBlob.get()->num() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob channels() = " << spHeatMapsBlob.get()->channels() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob height() = " << spHeatMapsBlob.get()->height() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob width() = " << spHeatMapsBlob.get()->width() << "\n";
+
+                // // std::cout << "---->poseExtractorCaffe:: spPeaksBlob = " << spPeaksBlob << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spMaximumPeaksBlob = " << spMaximumCaffe << "\n";
+                // std::cout << "              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~\n";
+
+                // std::cout << "inputDataSize: " << inputDataSize << "\n";
                 // Sanity checks
                 if (inputNetData.empty())
                     error("Empty inputNetData.", __LINE__, __FUNCTION__, __FILE__);
                 for (const auto& inputNetDataI : inputNetData)
+                {
                     if (inputNetDataI.empty())
                         error("Empty inputNetData.", __LINE__, __FUNCTION__, __FILE__);
+                }
+
                 if (inputNetData.size() != scaleInputToNetInputs.size())
                     error("Size(inputNetData) must be same than size(scaleInputToNetInputs).",
                           __LINE__, __FUNCTION__, __FILE__);
@@ -228,6 +278,11 @@ namespace op
                 const auto numberScales = inputNetData.size();
                 mNetInput4DSizes.resize(numberScales);
 
+                // std::cout << "inputNetData.size(): " << inputNetData.size() << "\n";
+                // std::cout << "numberScales: " << numberScales << "\n";
+                // std::cout << "mNetInput4DSizes size(): " << mNetInput4DSizes.size() << "\n";
+
+
                 // Process each image - Caffe deep network
                 if (mEnableNet)
                 {
@@ -237,11 +292,43 @@ namespace op
                             mModelFolder, mProtoTxtPath, mCaffeModelPath, false);
 
                     for (auto i = 0u ; i < inputNetData.size(); i++)
+                    {
+                        // std::cout << "------>forward:: spNets.at(i) where i = " << i << "\n";
+
+                        // std::cout << "inputNetData[i].size(): " << sizeof(inputNetData[i])/sizeof(inputNetData[i][0]) << "\n";
                         spNets.at(i)->forwardPass(inputNetData[i]);
+
+                        // std::cout << "--> spNets at i input #: " << spNets.at(i)->num_inputs() << "\n";
+                        // std::cout << "--> spNets at i output #: " << spNets.at(i)->num_outputs() << "\n";
+                    }
+                    
+                    // std::cout << "              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~\n";
+                    // std::cout << "---->poseExtractorCaffe:: spNets = " << spNets.size() << "\n";
+                    // // std::cout << "---->poseExtractorCaffe:: spResizeAndMergeCaffe = " << spResizeAndMergeCaffe.get()->mBottomSizes << "\n";
+                    // // std::cout << "---->poseExtractorCaffe:: spNmsCaffe = " << spNmsCaffe << "\n";
+                    // // std::cout << "---->poseExtractorCaffe:: spBodyPartConnectorCaffe = " << spBodyPartConnectorCaffe << "\n";
+                    // // std::cout << "---->poseExtractorCaffe:: spMaximumCaffe = " << spMaximumCaffe << "\n";
+                    // std::cout << "---->poseExtractorCaffe:: mNetInput4DSizes.size() = " << mNetInput4DSizes.size() << "\n";
+
+
+                    // // std::cout << "---->poseExtractorCaffe:: spCaffeNetOutputBlobs = " << spCaffeNetOutputBlobs.size() << "\n";
+                    // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = " << spHeatMapsBlob.get()->shape_string() << "\n";
+                    // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = " << spHeatMapsBlob.get()->num_axes() << "\n";
+                    // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob count() = " << spHeatMapsBlob.get()->count() << "\n";
+                    // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob num() = " << spHeatMapsBlob.get()->num() << "\n";
+                    // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob channels() = " << spHeatMapsBlob.get()->channels() << "\n";
+                    // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob height() = " << spHeatMapsBlob.get()->height() << "\n";
+                    // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob width() = " << spHeatMapsBlob.get()->width() << "\n";
+
+                    // // std::cout << "---->poseExtractorCaffe:: spPeaksBlob = " << spPeaksBlob << "\n";
+                    // // std::cout << "---->poseExtractorCaffe:: spMaximumPeaksBlob = " << spMaximumCaffe << "\n";
+                    // std::cout << "              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~\n";
+
                 }
                 // If custom network output
                 else
                 {
+                    // std::cout << "---->poseExtractorCaffe:: mEnableNet is false\n";
                     // Sanity check
                     if (inputNetData.size() != 1u)
                         error("Size(inputNetData) must match the provided heatmaps batch size ("
@@ -253,14 +340,26 @@ namespace op
                     spCaffeNetOutputBlobs.emplace_back(
                         std::make_shared<ArrayCpuGpu<float>>(poseNetOutput, copyFromGpu));
                 }
+
+                // std::cout << "---->poseExtractorCaffe: reshape blobs if required\n";
                 // Reshape blobs if required
                 for (auto i = 0u ; i < inputNetData.size(); i++)
                 {
+                    // std::cout << "------>poseExtractorCaffe:: reshape blobs if required where i = " << i << "\n";
                     // Reshape blobs if required - For dynamic sizes (e.g., images of different aspect ratio)
                     const auto changedVectors = !vectorsAreEqual(
                         mNetInput4DSizes.at(i), inputNetData[i].getSize());
+
+                    // std::cout << "mNetInput4DSizes size(): " << mNetInput4DSizes.size() << "\n";
+                    
+                    // std::cout << "inputNetData[i].getSize(): " << typeid(inputNetData[i].getSize()).name() << "\n";
+                    // std::cout << "-------->poseExtractorCaffe:: mNetInput4DSizes.at(i).size() = " << mNetInput4DSizes.at(i).size() << "\n";
+                    // std::cout << "-------->poseExtractorCaffe:: inputNetData[i].getSize().size() = " << inputNetData[i].getSize().size() << "\n";
+
                     if (changedVectors)
                     {
+                        // std::cout << "-------->poseExtractorCaffe:: changedVectors is true\n";
+
                         mNetInput4DSizes.at(i) = inputNetData[i].getSize();
                         reshapePoseExtractorCaffe(
                             spResizeAndMergeCaffe, spNmsCaffe, spBodyPartConnectorCaffe,
@@ -269,20 +368,67 @@ namespace op
                             mGpuId, mUpsamplingRatio);
                             // In order to resize to input size to have same results as Matlab
                             // scaleInputToNetInputs[i] vs. 1.f
+                        // std::cout << "mNetInput4DSizes.at(i) size: " << mNetInput4DSizes.at(i).size() << "\n";
+                        // std::cout << "mNetInput4DSizes.at(i): " << mNetInput4DSizes.at(i).at(0) << "," << mNetInput4DSizes.at(i).at(1) << "," << mNetInput4DSizes.at(i).at(2) << "," << mNetInput4DSizes.at(i).at(3) << "\n";
                     }
                     // Get scale net to output (i.e., image input)
                     const auto ratio = (
                         mUpsamplingRatio <= 0.f
                             ? 1 : mUpsamplingRatio / getPoseNetDecreaseFactor(mPoseModel));
+                    
+                    // std::cout << "-------->poseExtractorCaffe:: mUpsamplingRatio = " << mUpsamplingRatio << "\n";
+                    // std::cout << "-------->poseExtractorCaffe:: ratio = " << ratio << "\n";
+                    // std::cout << "-------->poseExtractorCaffe:: mNetOutputSize.x = " << mNetOutputSize.x << ", mNetOutputSize.y = " << mNetOutputSize.y << "\n";
+                    
                     if (changedVectors || TOP_DOWN_REFINEMENT)
+                    {
+                        // std::cout << "-------->poseExtractorCaffe:: changedVectors || TOP_DOWN_REFINEMENT\n";
+                        
                         mNetOutputSize = Point<int>{
                             positiveIntRound(ratio*mNetInput4DSizes[0][3]),
                             positiveIntRound(ratio*mNetInput4DSizes[0][2])};
+                        // std::cout << "mNetOutputSize: (" << mNetOutputSize.x << "," << mNetOutputSize.y << ")\n";
+                        // std::cout << "mNetOutputSize data: " << mNetOutputSize << "\n";
+                    }
+
+                    // std::cout << "------>poseExtractorCaffe:: mNetOutputSize.x = " << mNetOutputSize.x << ", mNetOutputSize.y = " << mNetOutputSize.y << "\n";
                 }
+
+                // std::cout << "              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~\n";
+                // std::cout << "---->poseExtractorCaffe:: spNets = " << spNets.size() << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spResizeAndMergeCaffe = " << spResizeAndMergeCaffe.get()->mBottomSizes << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spNmsCaffe = " << spNmsCaffe << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spBodyPartConnectorCaffe = " << spBodyPartConnectorCaffe << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spMaximumCaffe = " << spMaximumCaffe << "\n";
+                // std::cout << "---->poseExtractorCaffe:: mNetInput4DSizes.size() = " << mNetInput4DSizes.size() << "\n";
+
+
+                // // std::cout << "---->poseExtractorCaffe:: spCaffeNetOutputBlobs = " << spCaffeNetOutputBlobs.size() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = " << spHeatMapsBlob.get()->shape_string() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = " << spHeatMapsBlob.get()->num_axes() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob count() = " << spHeatMapsBlob.get()->count() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob num() = " << spHeatMapsBlob.get()->num() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob channels() = " << spHeatMapsBlob.get()->channels() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob height() = " << spHeatMapsBlob.get()->height() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob width() = " << spHeatMapsBlob.get()->width() << "\n";
+
+                // // std::cout << "---->poseExtractorCaffe:: spPeaksBlob = " << spPeaksBlob << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spMaximumPeaksBlob = " << spMaximumCaffe << "\n";
+                // std::cout << "              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~\n";
+
+                // OP_CUDA_PROFILE_END(timeNormalize1, 1e3, REPS);
+                // OP_CUDA_PROFILE_INIT(REPS);
                 // 2. Resize heat maps + merge different scales
                 // ~5ms (GPU) / ~20ms (CPU)
                 const auto caffeNetOutputBlobs = arraySharedToPtr(spCaffeNetOutputBlobs);
                 const std::vector<float> floatScaleRatios(scaleInputToNetInputs.begin(), scaleInputToNetInputs.end());
+
+                // std::cout << "caffeNetOutputBlobs num_axes: " << caffeNetOutputBlobs.at(0)->num_axes() << "\n";
+                // std::cout << "caffeNetOutputBlobs channels: " << caffeNetOutputBlobs.at(0)->channels() << "\n";
+                // std::cout << "caffeNetOutputBlobs count: " << caffeNetOutputBlobs.at(0)->count() << "\n";
+                // std::cout << "caffeNetOutputBlobs height: " << caffeNetOutputBlobs.at(0)->height() << "\n";
+                // std::cout << "caffeNetOutputBlobs width: " << caffeNetOutputBlobs.at(0)->width() << "\n";
+
                 spResizeAndMergeCaffe->setScaleRatios(floatScaleRatios);
                 spResizeAndMergeCaffe->Forward(caffeNetOutputBlobs, {spHeatMapsBlob.get()});
                 // Get scale net to output (i.e., image input)
@@ -294,13 +440,20 @@ namespace op
                 mScaleNetToOutput = {(float)resizeGetScaleFactor(netSize, inputDataSize)};
                 // mScaleNetToOutput = 1.f;
                 // 3. Get peaks by Non-Maximum Suppression
+                // std::cout << "---->poseExtractorCaffe: get peaks by non-maximum Suppression\n";
                 // ~2ms (GPU) / ~7ms (CPU)
+                // OP_CUDA_PROFILE_END(timeNormalize2, 1e3, REPS);
                 const auto nmsThreshold = (float)get(PoseProperty::NMSThreshold);
-                spNmsCaffe->setThreshold(nmsThreshold);
                 const auto nmsOffset = float(0.5/double(mScaleNetToOutput));
+                // OP_CUDA_PROFILE_INIT(REPS);
+                spNmsCaffe->setThreshold(nmsThreshold);
                 spNmsCaffe->setOffset(Point<float>{nmsOffset, nmsOffset});
-                spNmsCaffe->Forward({spHeatMapsBlob.get()}, {spPeaksBlob.get()});
+                spNmsCaffe->Forward({spHeatMapsBlob.get()}, {spPeaksBlob.get()}); 
+                // std::cout << "????spNmsCaffe->Forward(..)\n";
                 // 4. Connecting body parts
+                // std::cout << "---->poseExtractorCaffe: connecting body parts\n";
+                // OP_CUDA_PROFILE_END(timeNormalize3, 1e3, REPS);
+                // OP_CUDA_PROFILE_INIT(REPS);
                 spBodyPartConnectorCaffe->setScaleNetToOutput(mScaleNetToOutput);
                 spBodyPartConnectorCaffe->setInterMinAboveThreshold(
                     (float)get(PoseProperty::ConnectInterMinAboveThreshold));
@@ -310,13 +463,25 @@ namespace op
                 // Note: BODY_25D will crash (only implemented for CPU version)
                 spBodyPartConnectorCaffe->Forward(
                     {spHeatMapsBlob.get(), spPeaksBlob.get()}, mPoseKeypoints, mPoseScores);
+                // OP_CUDA_PROFILE_END(timeNormalize4, 1e3, REPS);
+                // log("1 = " + std::to_string(timeNormalize1) + " msecs.");
+                // log("2 = " + std::to_string(timeNormalize2) + " msecs.");
+                // log("3 = " + std::to_string(timeNormalize3) + " msecs.");
+                // log("4 = " + std::to_string(timeNormalize4) + " msecs.");
                 // Re-run on each person
+                // std::cout << "---->poseExtractorCaffe: re-run on each person\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob = " << spHeatMapsBlob.get()->channels() << "\n";
+                
+                // std::cout << "---------------------->poseExtractorCaffe forwardPass done 1\n";
+
                 if (TOP_DOWN_REFINEMENT)
                 {
+                    // std::cout << "------>poseExtractorCaffe: TOP_DOWN_REFINEMENT\n";
                     // Get each person rectangle
                     for (auto person = 0 ; person < mPoseKeypoints.getSize(0) ; person++)
                     {
                         // Get person rectangle resized to input size
+                        // std::cout << "-------->poseExtractorCaffe: get person rectangle resized to input size\n";
                         const auto rectangleF = getKeypointsRectangle(mPoseKeypoints, person, nmsThreshold)
                                               / mScaleNetToOutput;
                         // Make rectangle bigger to make sure the whole body is inside
@@ -379,9 +544,11 @@ namespace op
                             scaleNetToRoi = resizeGetScaleFactor(
                                 Point<int>{cvRectangle.width, cvRectangle.height}, targetSize);
                         }
+                        // std::cout << "------>poseExtractorCaffe:: scaleNetToRoi = " << scaleNetToRoi << "\n";
                         // No if scaleNetToRoi < 1 (image would be shrinked, so we assume best result already obtained)
                         if (scaleNetToRoi > 1)
                         {
+                            // std::cout << "---!!!!!!!!!!!!!!!!!!!!!!!!!!!!!scaleNetToRoi---!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
                             const auto areaInput = inputNetData[0].getVolume(2,3);
                             const auto areaRoi = targetSize.area();
                             Array<float> inputNetDataRoi{{1, 3, targetSize.y, targetSize.x}};
@@ -400,6 +567,7 @@ namespace op
                                 resizeFixedAspectRatio(resizedImageCvMat, inputCvMat, scaleNetToRoi, targetSize);
                             }
 
+                            // std::cout << "---->poseExtractorCaffe: re-process image ??why-------------------------------------------\n";
                             // Re-Process image
                             // 1. Caffe deep network
                             spNets.at(0)->forwardPass(inputNetDataRoi);
@@ -589,16 +757,48 @@ namespace op
                         }
                     }
                 }
+                
+                // std::cout << "              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~\n";
+                // std::cout << "---->poseExtractorCaffe:: spNets = " << spNets.size() << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spResizeAndMergeCaffe = " << spResizeAndMergeCaffe.get()->mBottomSizes << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spNmsCaffe = " << spNmsCaffe << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spBodyPartConnectorCaffe = " << spBodyPartConnectorCaffe << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spMaximumCaffe = " << spMaximumCaffe << "\n";
+                // std::cout << "---->poseExtractorCaffe:: mNetInput4DSizes.size() = " << mNetInput4DSizes.size() << "\n";
+
+
+                // // std::cout << "---->poseExtractorCaffe:: spCaffeNetOutputBlobs = " << spCaffeNetOutputBlobs.size() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = " << spHeatMapsBlob.get()->shape_string() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = " << spHeatMapsBlob.get()->num_axes() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob count() = " << spHeatMapsBlob.get()->count() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob num() = " << spHeatMapsBlob.get()->num() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob channels() = " << spHeatMapsBlob.get()->channels() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob height() = " << spHeatMapsBlob.get()->height() << "\n";
+                // std::cout << "---->poseExtractorCaffe:: spHeatMapsBlob width() = " << spHeatMapsBlob.get()->width() << "\n";
+
+                // // std::cout << "---->poseExtractorCaffe:: spPeaksBlob = " << spPeaksBlob << "\n";
+                // // std::cout << "---->poseExtractorCaffe:: spMaximumPeaksBlob = " << spMaximumCaffe << "\n";
+                // std::cout << "              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~\n";
+
+                // // std::cout << "---->poseExtractorCaffe:: mNetInput4DSizes.at(0).at(0) = " << (mNetInput4DSizes.at(0)).at(0) << "\n";
+                // std::cout << "---------------------->poseExtractorCaffe forwardPass done 2\n";
+                // std::cout << "*****************************************************************************************************\n";
+                // std::cout << "*****************************************************************************************************\n";
+                // std::cout << "\n";
+                // std::cout << "\n";
 
                 // 5. CUDA sanity check
                 #ifdef USE_CUDA
                     cudaCheck(__LINE__, __FUNCTION__, __FILE__);
+                    // std::cout << "---->poseExtractorCaffe -> forwardPass(..):: USE_CUDA enabled!\n";
                 #endif
+                    // std::cout << "---->poseExtractorCaffe -> forwardPass(..):: USE_CAFFE enabled! and forwardPass successful\n";
             #else
                 UNUSED(inputNetData);
                 UNUSED(inputDataSize);
                 UNUSED(scaleInputToNetInputs);
             #endif
+            // std::cout << "poseExtractorCaffe:: forwardPass() done......................\n";
         }
         catch (const std::exception& e)
         {
@@ -608,6 +808,7 @@ namespace op
 
     const float* PoseExtractorCaffe::getCandidatesCpuConstPtr() const
     {
+        // std::cout << "poseExtractorCaffe:: getCandidatesCpuConstPtr()\n";
         try
         {
             #ifdef USE_CAFFE
@@ -626,6 +827,7 @@ namespace op
 
     const float* PoseExtractorCaffe::getCandidatesGpuConstPtr() const
     {
+        // std::cout << "poseExtractorCaffe:: getCandidatesGpuConstPtr()\n";
         try
         {
             #ifdef USE_CAFFE
@@ -644,6 +846,7 @@ namespace op
 
     const float* PoseExtractorCaffe::getHeatMapCpuConstPtr() const
     {
+        // std::cout << "poseExtractorCaffe:: getHeatMapCpuConstPtr()\n";
         try
         {
             #ifdef USE_CAFFE
@@ -662,6 +865,7 @@ namespace op
 
     const float* PoseExtractorCaffe::getHeatMapGpuConstPtr() const
     {
+        // std::cout << "poseExtractorCaffe:: getHeatMapGpuConstPtr()\n";
         try
         {
             #ifdef USE_CAFFE
@@ -680,6 +884,7 @@ namespace op
 
     std::vector<int> PoseExtractorCaffe::getHeatMapSize() const
     {
+        // std::cout << "poseExtractorCaffe:: getHeatMapSize()\n";
         try
         {
             #ifdef USE_CAFFE
@@ -698,6 +903,7 @@ namespace op
 
     const float* PoseExtractorCaffe::getPoseGpuConstPtr() const
     {
+        // std::cout << "getPoseGpuConstPtr()\n";
         try
         {
             #ifdef USE_CAFFE

@@ -1,4 +1,5 @@
 #include <openpose/pose/poseExtractor.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -17,6 +18,7 @@ namespace op
         spPersonIdExtractor{personIdExtractor},
         spPersonTrackers{personTrackers}
     {
+        // std::cout << "poseExtractor:: PoseExtractor(...) constructor\n";
     }
 
     PoseExtractor::~PoseExtractor()
@@ -25,6 +27,7 @@ namespace op
 
     void PoseExtractor::initializationOnThread()
     {
+        // std::cout << "poseExtractor:: initializationOnThread()\n";
         try
         {
             spPoseExtractorNet->initializationOnThread();
@@ -41,21 +44,30 @@ namespace op
                                     const Array<float>& poseNetOutput,
                                     const long long frameId)
     {
+        // std::cout << "poseExtractor:: forwardPass(...)" << "\n";
         try
         {
             if (mTracking < 1 || frameId % (mTracking+1) == 0)
+            {
                 spPoseExtractorNet->forwardPass(inputNetData, inputDataSize, scaleInputToNetInputs, poseNetOutput);
+                // std::cout << "---->spPoseExtractorNet->forwardPass" << "\n";
+            }
             else
+            {
                 spPoseExtractorNet->clear();
+                // std::cout << "---->spPoseExtractorNet->clear()" << "\n";
+            }
         }
         catch (const std::exception& e)
         {
+            // std::cout << "---->poseExtractor::forwardPass catch" << "\n";
             error(e.what(), __LINE__, __FUNCTION__, __FILE__);
         }
     }
 
     Array<float> PoseExtractor::getHeatMapsCopy() const
     {
+        // std::cout << "poseExtractor:: getHeatMapsCopy()\n";
         try
         {
             return spPoseExtractorNet->getHeatMapsCopy();
@@ -69,6 +81,7 @@ namespace op
 
     std::vector<std::vector<std::array<float, 3>>> PoseExtractor::getCandidatesCopy() const
     {
+        // std::cout << "poseExtractor:: getCandidatesCopy()\n";
         try
         {
             return spPoseExtractorNet->getCandidatesCopy();
@@ -82,6 +95,7 @@ namespace op
 
     Array<float> PoseExtractor::getPoseKeypoints() const
     {
+        // std::cout << "poseExtractor:: getPoseKeypoints()\n";
         try
         {
             return spPoseExtractorNet->getPoseKeypoints();
@@ -95,6 +109,7 @@ namespace op
 
     Array<float> PoseExtractor::getPoseScores() const
     {
+        // std::cout << "poseExtractor:: getPoseScores()\n";
         try
         {
             return spPoseExtractorNet->getPoseScores();
@@ -108,6 +123,7 @@ namespace op
 
     float PoseExtractor::getScaleNetToOutput() const
     {
+        // std::cout << "poseExtractor:: getScaleNetToOutput()\n";
         try
         {
             return spPoseExtractorNet->getScaleNetToOutput();
@@ -121,6 +137,7 @@ namespace op
 
     void PoseExtractor::keepTopPeople(Array<float>& poseKeypoints, const Array<float>& poseScores) const
     {
+        // std::cout << "poseExtractor:: keepTopPeople(...)\n";
         try
         {
             // Keep only top N people
@@ -136,6 +153,7 @@ namespace op
     Array<long long> PoseExtractor::extractIds(const Array<float>& poseKeypoints, const cv::Mat& cvMatInput,
                                                const unsigned long long imageViewIndex)
     {
+        // std::cout << "poseExtractor:: extractIds(...)\n";
         try
         {
             // Run person ID extractor
@@ -155,6 +173,7 @@ namespace op
                                                          const unsigned long long imageViewIndex,
                                                          const long long frameId)
     {
+        // std::cout << "poseExtractor:: extractIdsLockThread(...)\n";
         try
         {
             // Run person ID extractor
@@ -173,6 +192,7 @@ namespace op
                               const cv::Mat& cvMatInput,
                               const unsigned long long imageViewIndex)
     {
+        // std::cout << "poseExtractor:: track(...)\n";
         try
         {
             if (!spPersonTrackers->empty())
@@ -204,6 +224,7 @@ namespace op
                                         const cv::Mat& cvMatInput,
                                         const unsigned long long imageViewIndex, const long long frameId)
     {
+        // std::cout << "poseExtractor:: trackLockThread(...)\n";
         try
         {
             if (!spPersonTrackers->empty())

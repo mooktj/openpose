@@ -7,6 +7,7 @@
 #include <openpose/gpu/cuda.hpp>
 #include <openpose/utilities/keypoint.hpp>
 #include <openpose/pose/poseGpuRenderer.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -65,6 +66,7 @@ namespace op
                                                             const float scaleInputToOutput,
                                                             const float scaleNetToOutput)
     {
+        // std::cout << "------------------->PoseGpuRenderer::renderPose\n";
         try
         {
             // Sanity check
@@ -72,9 +74,12 @@ namespace op
                 error("Empty Array<float> outputData.", __LINE__, __FUNCTION__, __FILE__);
             // GPU rendering
             const auto elementRendered = spElementToRender->load();
+            // std::cout << "elementRendered: " << elementRendered << "\n";
             std::string elementRenderedName;
             #ifdef USE_CUDA
                 const auto numberPeople = poseKeypoints.getSize(0);
+                // std::cout << "numberPeople: " << numberPeople << "\n";
+
                 if (numberPeople > 0 || elementRendered != 0 || !mBlendOriginalFrame)
                 {
                     cpuToGpuMemoryIfNotCopiedYet(outputData.getPtr(), outputData.getVolume());
@@ -84,9 +89,17 @@ namespace op
                     const auto numberBodyPartsPlusBkg = numberBodyParts + (hasBkg ? 1 : 0);
                     const auto numberBodyPAFChannels = getPosePartPairs(mPoseModel).size();
                     const Point<int> frameSize{outputData.getSize(1), outputData.getSize(0)};
+                    
+                    // std::cout << "numberBodyParts: " << numberBodyParts << "\n";
+                    // std::cout << "hasBkg: " << hasBkg << "\n";
+                    // std::cout << "numberBodyPartsPlusBkg: " << numberBodyPartsPlusBkg << "\n";
+                    // std::cout << "numberBodyPAFChannels: " << numberBodyPAFChannels << "\n";
+                    // std::cout << "frameSize: " << frameSize << "\n";
+
                     // Draw poseKeypoints
                     if (elementRendered == 0)
                     {
+                        // std::cout << "elementRendered == 0\n";
                         // Rescale keypoints to output size
                         auto poseKeypointsRescaled = poseKeypoints.clone();
                         scaleKeypoints(poseKeypointsRescaled, scaleInputToOutput);
@@ -102,6 +115,7 @@ namespace op
                     }
                     else
                     {
+                        // std::cout << "elementRendered != 0\n";
                         // If resized to input resolution: Replace scaleNetToOutput * scaleInputToOutput by
                         // scaleInputToOutput, and comment the sanity check.
                         // Sanity check

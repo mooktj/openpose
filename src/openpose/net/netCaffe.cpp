@@ -171,8 +171,16 @@ namespace op
                         cudaCheck(__LINE__, __FUNCTION__, __FILE__);
                     #endif
                 #endif
+
+                // std::cout << "  upImpl->upCaffeNet->num_inputs(): " << upImpl->upCaffeNet->num_inputs() << "\n";
+                // std::cout << "  upImpl->upCaffeNet->num_outputs(): " << upImpl->upCaffeNet->num_outputs() << "\n";
+
+                // std::cout << "  upImpl->upCaffeNet->input_blobs().size(): " << upImpl->upCaffeNet->input_blobs().size() << "\n";
+                // std::cout << "  upImpl->upCaffeNet->output_blobs().size(): " << upImpl->upCaffeNet->output_blobs().size() << "\n";
                 // Set spOutputBlob
                 upImpl->spOutputBlob = upImpl->upCaffeNet->blob_by_name(upImpl->mLastBlobName);
+                // std::cout << "  upImpl->upCaffeNet->input_blobs().size(): " << upImpl->upCaffeNet->input_blobs().size() << "\n";
+                // std::cout << "  upImpl->upCaffeNet->output_blobs().size(): " << upImpl->upCaffeNet->output_blobs().size() << "\n";
                 // Sanity check
                 if (upImpl->spOutputBlob == nullptr)
                     error("The output blob is a nullptr. Did you use the same name than the prototxt? (Used: "

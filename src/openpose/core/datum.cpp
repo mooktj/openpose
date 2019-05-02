@@ -1,18 +1,30 @@
 #include <openpose/utilities/errorAndLog.hpp>
 #include <openpose/core/datum.hpp>
 
+#include <iostream>
+
 namespace op
 {
     Datum::Datum() :
+        // **** VNect params ADDED **** //
+        renderOpenPose{true},
+        renderVNect{true},
+
         id{std::numeric_limits<unsigned long long>::max()},
         subId{0},
         subIdMax{0},
         poseIds{-1}
     {
+        // std::cout << "datum:: Datum() constructor\n";
     }
 
     // Copy constructor
     Datum::Datum(const Datum& datum) :
+
+        // **** VNect params ADDED **** //
+        renderOpenPose{datum.renderOpenPose},
+        renderVNect{datum.renderVNect},
+
         // ID
         id{datum.id},
         subId{datum.subId},
@@ -78,8 +90,14 @@ namespace op
     // Copy assignment
     Datum& Datum::operator=(const Datum& datum)
     {
+        std::cout << "datum:: Datum::operator=(const...)\n";
         try
         {
+
+            // **** VNect params ADDED **** //
+            renderOpenPose = datum.renderOpenPose;
+            renderVNect = datum.renderVNect;
+
             // ID
             id = datum.id;
             subId = datum.subId;
@@ -149,6 +167,11 @@ namespace op
 
     // Move constructor
     Datum::Datum(Datum&& datum) :
+
+        // **** VNect params ADDED **** //
+        renderOpenPose{datum.renderOpenPose},
+        renderVNect{datum.renderVNect},
+
         // ID
         id{datum.id},
         subId{datum.subId},
@@ -158,8 +181,14 @@ namespace op
         scaleInputToOutput{datum.scaleInputToOutput},
         scaleNetToOutput{datum.scaleNetToOutput}
     {
+        // std::cout << "datum:: Datum(...) constructor\n";
         try
         {
+
+            // **** VNect params ADDED **** //
+            std::swap(renderOpenPose, datum.renderOpenPose);
+            std::swap(renderVNect, datum.renderVNect);
+
             // ID
             std::swap(name, datum.name);
             // Input image and rendered version
@@ -221,8 +250,13 @@ namespace op
     // Move assignment
     Datum& Datum::operator=(Datum&& datum)
     {
+        std::cout << "datum:: Datum::operator=(...)\n";
         try
         {
+            // **** VNect params ADDED **** //
+            renderOpenPose = datum.renderOpenPose;
+            renderVNect = datum.renderVNect;
+
             // ID
             id = datum.id;
             subId = datum.subId;
@@ -294,10 +328,16 @@ namespace op
 
     Datum Datum::clone() const
     {
+        std::cout << "datum:: Datum::clone()\n";
         try
         {
             // Constructor
             Datum datum;
+
+            // **** VNect params ADDED **** //
+            datum.renderOpenPose = renderOpenPose;
+            datum.renderVNect = renderVNect;
+
             // ID
             datum.id = id;
             datum.subId = subId;

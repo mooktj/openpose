@@ -1,6 +1,8 @@
 #include <openpose/pose/poseParametersRender.hpp>
 #include <openpose/pose/poseParameters.hpp>
 
+#include <iostream>
+
 namespace op
 {
     // Body parts mapping
@@ -483,9 +485,9 @@ namespace op
                254,255, 256,257, 258,259, 260,261, 262,263, 264,265, 266,267, 268,269, 270,271, 272,273, 274,275,
                276,277,
             // Outer-Inner + Inner Mouth
-               278,279, 280,281, 282,283, 284,285, 286,287, 288,289, 290,291, 292,293, 294,295//,
-            // // Eyes-Pupils
-            //    296,297, 298,299, 300,301, 302,303
+               278,279, 280,281, 282,283, 284,285, 286,287, 288,289, 290,291, 292,293, 294,295,
+            // Eyes-Pupils
+               296,297, 298,299, 300,301, 302,303
         },
     };
     // POSE_BODY_PART_MAPPING on HPP crashes on Windows at dynamic initialization if it's on hpp
@@ -699,9 +701,9 @@ namespace op
                F135+54,F135+55, F135+55,F135+56, F135+56,F135+57, F135+57,F135+58, F135+58,F135+59,
             // Outer-Inner + Inner Mouth
                F135+48,F135+60, F135+54,F135+64, F135+60,F135+61, F135+61,F135+62, F135+62,F135+63, F135+63,F135+64, F135+64,F135+65,
-               F135+65,F135+66, F135+66,F135+67//,
-            // // Eyes-Pupils
-            //    F135+36,F135+68, F135+39,F135+68, F135+42,F135+69, F135+45,F135+69
+               F135+65,F135+66, F135+66,F135+67,
+            // Eyes-Pupils
+               F135+36,F135+68, F135+39,F135+68, F135+42,F135+69, F135+45,F135+69
         }
     };
 
@@ -709,19 +711,23 @@ namespace op
     {
         try
         {
+            // std::cout << "*********Mook::log (poseParameters.cpp/getPoseBodyPartMapping): try: " << (int)poseModel << "\n";
             return POSE_BODY_PART_MAPPING.at((int)poseModel);
         }
         catch (const std::exception& e)
         {
             error(e.what(), __LINE__, __FUNCTION__, __FILE__);
+            // std::cout << "*********Mook::log (poseParameters.cpp/getPoseBodyPartMapping): catch: " << (int)poseModel << "\n";
             return POSE_BODY_PART_MAPPING[(int)poseModel];
         }
     }
 
     const std::string& getPoseProtoTxt(const PoseModel poseModel)
     {
+        // std::cout << "poseParameters:: getPoseProtoTxt(...)\n";
         try
         {
+            // std::cout << "---->poseParameters:: POSE_PROTOTXT.at((int)poseModel): " << POSE_PROTOTXT.at((int)poseModel) << "\n";
             return POSE_PROTOTXT.at((int)poseModel);
         }
         catch (const std::exception& e)

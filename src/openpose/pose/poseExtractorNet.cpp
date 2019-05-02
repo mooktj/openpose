@@ -5,11 +5,13 @@
 #include <openpose/core/enumClasses.hpp>
 #include <openpose/utilities/fastMath.hpp>
 #include <openpose/pose/poseExtractorNet.hpp>
+#include <iostream>
 
 namespace op
 {
     bool heatMapTypesHas(const std::vector<HeatMapType>& heatMapTypes, const HeatMapType heatMapType)
     {
+        // std::cout << "poseExtractorNet:: heatMapTypesHas(...)\n";
         try
         {
             for (auto heatMapTypeVector : heatMapTypes)
@@ -26,6 +28,7 @@ namespace op
 
     int getNumberHeatMapChannels(const std::vector<HeatMapType>& heatMapTypes, const PoseModel poseModel)
     {
+        // std::cout << "poseExtractorNet:: getNumberHeatMapChannels(...)\n";
         try
         {
             auto numberHeatMapChannels = 0;
@@ -53,6 +56,7 @@ namespace op
         mHeatMapScaleMode{heatMapScaleMode},
         mAddPartCandidates{addPartCandidates}
     {
+        // std::cout << "poseExtractorNet:: PoseExtractorNet(...) constructor\n";
         try
         {
             // Error check
@@ -82,15 +86,18 @@ namespace op
 
     PoseExtractorNet::~PoseExtractorNet()
     {
+        // std::cout << "poseExtractorNet:: ~PoseExtractorNet()\n";
     }
 
     void PoseExtractorNet::initializationOnThread()
     {
+        // std::cout << "poseExtractorNet:: initializationOnThread()\n";
         try
         {
             // Get thread id
             mThreadId = {std::this_thread::get_id()};
             // Deep net initialization
+            // std::cout << "---->Deep net initialization ==== netInitializationOnThread() call poseExtractorCaffe??\n";
             netInitializationOnThread();
         }
         catch (const std::exception& e)
@@ -101,6 +108,7 @@ namespace op
 
     Array<float> PoseExtractorNet::getHeatMapsCopy() const
     {
+        // std::cout << "poseExtractorNet:: getHeatMapsCopy()\n";
         try
         {
             checkThread();
@@ -110,21 +118,49 @@ namespace op
                 #ifdef USE_CUDA
                     cudaCheck(__LINE__, __FUNCTION__, __FILE__);
                 #endif
+
                 // Get heatmaps size
                 const auto heatMapSize = getHeatMapSize();
+                /*std::cout << "****^^^^Mookie the Rookie Cookie Smoothie^^presents--poseExtractorNet heatMapSize: " << "\n";
+                for (const auto i : heatMapSize)
+                {
+                    std::cout << i << "\n";
+                }*/
+
+                // std::cout << "---->poseExtractorNet:: got HeatMapSize()\n";
 
                 // Allocate memory
                 const auto numberHeatMapChannels = getNumberHeatMapChannels(mHeatMapTypes, mPoseModel);
+                // std::cout << "****^^^^Mookie the Rookie Cookie Smoothie^^presents--poseExtractorNet numberHeatMapChannels: " << numberHeatMapChannels << "\n";
                 heatMaps.reset({numberHeatMapChannels, heatMapSize[2], heatMapSize[3]});
+
+                // std::cout << "---->poseExtractorNet:: heatMaps.reset(...)\n";
 
                 // Copy memory
                 const auto channelOffset = heatMaps.getVolume(1, 2);
+
+                // std::cout << "---->heatMaps.getSize(0): " << (int)heatMaps.getSize(0) << "\n";
+                // std::cout << "---->heatMaps.getSize(1): " << (int)heatMaps.getSize(1) << "\n";
+                // std::cout << "---->heatMaps.getSize(2): " << (int)heatMaps.getSize(2) << "\n";
+                // std::cout << "---->heatMaps.getSize(3): " << (int)heatMaps.getSize(3) << "\n";
+                // std::cout << "---->heatMaps.getSize(100): " << (int)heatMaps.getSize(100) << "\n";
+
                 const auto volumeBodyParts = getPoseNumberBodyParts(mPoseModel) * channelOffset;
+
+                // std::cout << "---->getPoseNumberBodyParts(mPoseModel): " << getPoseNumberBodyParts(mPoseModel) << "\n";
+                // std::cout << "---->channelOffset: " << channelOffset << "\n";
+
                 const auto volumePAFs = getPosePartPairs(mPoseModel).size() * channelOffset;
+                // std::cout << "**&&^^^^Mookie the Rookie Cookie Smoothie^^presents--poseExtractorNet channelOffset: " << channelOffset << "\n";
+                // std::cout << "**&&^^^^Mookie the Rookie Cookie Smoothie^^presents--poseExtractorNet volumeBodyParts: " << volumeBodyParts << "\n";
+                // std::cout << "**&&^^^^Mookie the Rookie Cookie Smoothie^^presents--poseExtractorNet volumePAFs: " << volumePAFs << "\n";
+
                 auto totalOffset = 0u;
                 // Body parts
                 if (heatMapTypesHas(mHeatMapTypes, HeatMapType::Parts))
                 {
+                    // std::cout << "-------->poseExtractorNet:: Body parts----------------------------------------------------------------------------\n";
+                    // std::cout << "----**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>in Bodyparts obtaining<<!!\n";
                     #ifdef USE_CUDA
                         cudaMemcpy(heatMaps.getPtr(), getHeatMapGpuConstPtr(),
                                    volumeBodyParts * sizeof(float), cudaMemcpyDeviceToHost);
@@ -136,22 +172,46 @@ namespace op
                     {
                         // Change from [0,1] to [-1,1]
                         if (mHeatMapScaleMode == ScaleMode::PlusMinusOne)
+                        {
+                            // std::cout << "---------->ScaleMode::PlusMinusOne\n";
+                            // std::cout << "**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>ScaleMode::PluseMinueOne<<!!\n";
                             for (auto i = 0u ; i < volumeBodyParts ; i++)
+                            {
+                                // std::cout << "i = " << i << "\n";
                                 heatMaps[i] = fastTruncate(heatMaps[i]) * 2.f - 1.f;
+                            }
+                        }
                         // [0, 255]
                         else if (mHeatMapScaleMode == ScaleMode::UnsignedChar)
+                        {
+                            // std::cout << "---------->ScaleMode::UnsignedChar\n";
+                            // std::cout << "**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>ScaleMode::UnsignedChar<<!!\n";
                             for (auto i = 0u ; i < volumeBodyParts ; i++)
+                            {
+                                // std::cout << "i = " << i << "\n";
                                 heatMaps[i] = (float)positiveIntRound(fastTruncate(heatMaps[i]) * 255.f);
+                            }
+                        }
                         // Avoid values outside original range
                         else
+                        {
+                            // std::cout << "---------->ScaleMode:: else\n";
+                            // std::cout << "**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>ScaleMode::ELSE<<!!\n";
                             for (auto i = 0u ; i < volumeBodyParts ; i++)
+                            {
+                                // std::cout << "i = " << i << "\n";
                                 heatMaps[i] = fastTruncate(heatMaps[i]);
+                            }
+                        }
                     }
                     totalOffset += (unsigned int)volumeBodyParts;
+                    // std::cout << "volumeBodyParts: " << volumeBodyParts << "\n";
                 }
                 // Background
                 if (heatMapTypesHas(mHeatMapTypes, HeatMapType::Background))
                 {
+                    // std::cout << "-------->poseExtractorNet:: Background----------------------------------------------------------------------------\n";
+                    
                     auto* heatMapsPtr = heatMaps.getPtr() + totalOffset;
                     #ifdef USE_CUDA
                         cudaMemcpy(heatMapsPtr, getHeatMapGpuConstPtr() + volumeBodyParts,
@@ -165,22 +225,33 @@ namespace op
                     {
                         // Change from [0,1] to [-1,1]
                         if (mHeatMapScaleMode == ScaleMode::PlusMinusOne)
+                        {
+                            // std::cout << "**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>ScaleMode::PluseMinueOne<<!!\n";
                             for (auto i = 0u ; i < channelOffset ; i++)
                                 heatMapsPtr[i] = fastTruncate(heatMapsPtr[i]) * 2.f - 1.f;
+                        }
                         // [0, 255]
                         else if (mHeatMapScaleMode == ScaleMode::UnsignedChar)
+                        {
+                            // std::cout << "**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>ScaleMode::UnsignedChar<<!!\n";
                             for (auto i = 0u ; i < channelOffset ; i++)
                                 heatMapsPtr[i] = (float)positiveIntRound(fastTruncate(heatMapsPtr[i]) * 255.f);
+                        }
                         // Avoid values outside original range
                         else
+                        {
+                            // std::cout << "**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>ScaleMode::ELSE<<!!\n";
                             for (auto i = 0u ; i < channelOffset ; i++)
                                 heatMapsPtr[i] = fastTruncate(heatMapsPtr[i]);
+                        }
                     }
                     totalOffset += (unsigned int)channelOffset;
                 }
                 // PAFs
                 if (heatMapTypesHas(mHeatMapTypes, HeatMapType::PAFs))
                 {
+                    // std::cout << "-------->poseExtractorNet:: PAFs----------------------------------------------------------------------------\n";
+                    // std::cout << "----**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>in PAF obtaining<<!!\n";
                     auto* heatMapsPtr = heatMaps.getPtr() + totalOffset;
                     #ifdef USE_CUDA
                         cudaMemcpy(heatMapsPtr,
@@ -196,20 +267,31 @@ namespace op
                     {
                         // Change from [-1,1] to [0,1]. Note that PAFs are in [-1,1]
                         if (mHeatMapScaleMode == ScaleMode::ZeroToOne)
+                        {   
+                            // std::cout << "**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>ScaleMode::PluseMinueOne<<!!\n";
                             for (auto i = 0u ; i < volumePAFs ; i++)
                                 heatMapsPtr[i] = fastTruncate(heatMapsPtr[i], -1.f) * 0.5f + 0.5f;
+                        }
                         // [0, 255]
                         else if (mHeatMapScaleMode == ScaleMode::UnsignedChar)
+                        {
+                            // std::cout << "**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>ScaleMode::UnsignedChar<<!!\n";
                             for (auto i = 0u ; i < volumePAFs ; i++)
                                 heatMapsPtr[i] = (float)positiveIntRound(
                                     fastTruncate(heatMapsPtr[i], -1.f) * 128.5f + 128.5f
                                 );
+                        }
                         // Avoid values outside original range
                         else
+                        {
+                            // std::cout << "**^^Mookie the Rookie Cookie Smoothie^^^presents--poseExtractorNet !!>>ScaleMode::ELSE<<!!\n";
                             for (auto i = 0u ; i < volumePAFs ; i++)
                                 heatMapsPtr[i] = fastTruncate(heatMapsPtr[i], -1.f);
+                        }
                     }
                     totalOffset += (unsigned int)volumePAFs;
+
+                    // std::cout << "volumePAFs: " << volumePAFs << "\n";
                 }
                 // Copy all at once
                 // cudaMemcpy(heatMaps.getPtr(), getHeatMapGpuConstPtr(), heatMaps.getVolume() * sizeof(float),
@@ -218,6 +300,8 @@ namespace op
             #ifdef USE_CUDA
                 cudaCheck(__LINE__, __FUNCTION__, __FILE__);
             #endif
+
+            // std::cout << "---->poseExtractorNet:: done heatMaps\n";
             return heatMaps;
         }
         catch (const std::exception& e)
@@ -229,6 +313,7 @@ namespace op
 
     std::vector<std::vector<std::array<float,3>>> PoseExtractorNet::getCandidatesCopy() const
     {
+        // std::cout << "poseExtractorNet:: getCandidatesCopy()\n";
         try
         {
             // Sanity check
@@ -267,6 +352,7 @@ namespace op
 
     Array<float> PoseExtractorNet::getPoseKeypoints() const
     {
+        // std::cout << "poseExtractorNet:: getPoseKeypoints()\n";
         try
         {
             checkThread();
@@ -281,6 +367,7 @@ namespace op
 
     Array<float> PoseExtractorNet::getPoseScores() const
     {
+        // std::cout << "poseExtractorNet:: getPoseScores()\n";
         try
         {
             checkThread();
@@ -295,6 +382,7 @@ namespace op
 
     float PoseExtractorNet::getScaleNetToOutput() const
     {
+        // std::cout << "poseExtractorNet:: getScaleNetToOutput()\n";
         try
         {
             checkThread();
@@ -309,6 +397,7 @@ namespace op
 
     double PoseExtractorNet::get(const PoseProperty property) const
     {
+        // std::cout << "poseExtractorNet:: get(...)\n";
         try
         {
             return mProperties.at((int)property);
@@ -322,6 +411,7 @@ namespace op
 
     void PoseExtractorNet::set(const PoseProperty property, const double value)
     {
+        // std::cout << "poseExtractorNet:: set(...)\n";
         try
         {
             auto& propertyElement = mProperties.at((int)property);
@@ -338,6 +428,7 @@ namespace op
 
     void PoseExtractorNet::increase(const PoseProperty property, const double value)
     {
+        // std::cout << "poseExtractorNet:: increase(...)\n";
         try
         {
             set(property, get(property) + value);
@@ -350,6 +441,7 @@ namespace op
 
     void PoseExtractorNet::clear()
     {
+        // std::cout << "poseExtractorNet:: clear()\n";
         try
         {
             mPoseKeypoints.reset();
@@ -363,6 +455,7 @@ namespace op
 
     void PoseExtractorNet::checkThread() const
     {
+        // std::cout << "poseExtractorNet:: checkThread()\n";
         try
         {
             if (mThreadId != std::this_thread::get_id())

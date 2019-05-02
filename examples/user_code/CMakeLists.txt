@@ -1,8 +1,12 @@
 # Uncomment these lines with your custom file names
-# set(USER_CODE_FILES 
-#     ADD_HERE_YOUR_FILE1.cpp
+set(USER_CODE_FILES 
+    keypoints_ordering.cpp
 #     ADD_HERE_YOUR_FILE1.hpp
-#     ADD_HERE_YOUR_FILE2.cpp
+#   openpose_sample.cpp
+    01_cpp_example.cpp
+    vnect_cpp.cpp
+    read_file.cpp
+    tut_ex_1.cpp)
 #     # ...
 #     ADD_HERE_YOUR_FILEn.cpp)
 
@@ -11,6 +15,7 @@ foreach(USER_CODE_FILE ${USER_CODE_FILES})
   get_filename_component(SOURCE_NAME ${USER_CODE_FILE} NAME_WE)
 
   if (UNIX OR APPLE)
+    set(CMAKE_CXX_FLAGS "-g -lboost_system -lpython2.7")
     set(EXE_NAME "${SOURCE_NAME}.bin")
   elseif (WIN32)
     set(EXE_NAME "UserCustomCode")
@@ -18,7 +23,8 @@ foreach(USER_CODE_FILE ${USER_CODE_FILES})
 
   message(STATUS "Adding Example ${EXE_NAME}")
   add_executable(${EXE_NAME} ${USER_CODE_FILE})
-  target_link_libraries(${EXE_NAME} openpose ${examples_3rdparty_libraries})
+  add_definitions(${CMAKE_CXX_FLAGS})
+  target_link_libraries(${EXE_NAME} ${CMAKE_CXX_FLAGS} openpose ${examples_3rdparty_libraries})
 
   if (WIN32)
     set_property(TARGET ${EXE_NAME} PROPERTY FOLDER "User Code")

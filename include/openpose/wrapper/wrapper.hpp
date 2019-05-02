@@ -12,6 +12,8 @@
 #include <openpose/wrapper/wrapperStructOutput.hpp>
 #include <openpose/wrapper/wrapperStructPose.hpp>
 
+#include <iostream>
+
 namespace op
 {
     /**
@@ -238,6 +240,8 @@ namespace op
         WrapperStructInput mWrapperStructInput;
         WrapperStructOutput mWrapperStructOutput;
         WrapperStructGui mWrapperStructGui;
+
+        
         // User configurable workers
         std::array<bool, int(WorkerType::Size)> mUserWsOnNewThread;
         std::array<std::vector<TWorker>, int(WorkerType::Size)> mUserWs;
@@ -263,11 +267,13 @@ namespace op
         mThreadManager{threadManagerMode},
         mMultiThreadEnabled{true}
     {
+        // std::cout << "wrapper:: WrapperT(threadManagerMode) constructor\n";
     }
 
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::~WrapperT()
     {
+        // std::cout << "wrapper:: constructor, ~WrapperT()\n";
         try
         {
             stop();
@@ -286,6 +292,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::disableMultiThreading()
     {
+        // std::cout << "wrapper:: disableMultiThreading()\n";
         try
         {
             mMultiThreadEnabled = false;
@@ -300,6 +307,7 @@ namespace op
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::setWorker(
         const WorkerType workerType, const TWorker& worker, const bool workerOnNewThread)
     {
+        // std::cout << "wrapper:: setWorker(...)\n";
         try
         {
             // Sanity check
@@ -319,6 +327,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::configure(const WrapperStructPose& wrapperStructPose)
     {
+        // std::cout << "wrapper:: configure(wrapperStructPose)\n";
         try
         {
             mWrapperStructPose = wrapperStructPose;
@@ -332,6 +341,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::configure(const WrapperStructFace& wrapperStructFace)
     {
+        // std::cout << "wrapper:: configure(wrapperStructFace)\n";   
         try
         {
             mWrapperStructFace = wrapperStructFace;
@@ -345,6 +355,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::configure(const WrapperStructHand& wrapperStructHand)
     {
+        // std::cout << "wrapper:: configure(wrapperStructHand)\n";   
         try
         {
             mWrapperStructHand = wrapperStructHand;
@@ -358,6 +369,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::configure(const WrapperStructExtra& wrapperStructExtra)
     {
+        // std::cout << "wrapper:: configure(wrapperStructExtra)\n";   
         try
         {
             mWrapperStructExtra = wrapperStructExtra;
@@ -371,6 +383,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::configure(const WrapperStructInput& wrapperStructInput)
     {
+        // std::cout << "wrapper:: configure(wrapperStructInput)\n";
         try
         {
             mWrapperStructInput = wrapperStructInput;
@@ -384,6 +397,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::configure(const WrapperStructOutput& wrapperStructOutput)
     {
+        // std::cout << "wrapper:: configure(wrapperStructOutput)\n";
         try
         {
             mWrapperStructOutput = wrapperStructOutput;
@@ -397,6 +411,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::configure(const WrapperStructGui& wrapperStructGui)
     {
+        // std::cout << "wrapper:: configure(wrapperStructGui)\n";   
         try
         {
             mWrapperStructGui = wrapperStructGui;
@@ -410,6 +425,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::exec()
     {
+        // std::cout << "wrapper:: exec()\n";
         try
         {
             configureThreadManager<TDatum, TDatums, TDatumsSP, TWorker>(
@@ -428,6 +444,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::start()
     {
+        // std::cout << "wrapper:: start()\n";
         try
         {
             configureThreadManager<TDatum, TDatums, TDatumsSP, TWorker>(
@@ -446,6 +463,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::stop()
     {
+        // std::cout << "wrapper:: stop()\n";   
         try
         {
             mThreadManager.stop();
@@ -459,6 +477,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     bool WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::isRunning() const
     {
+        // std::cout << "wrapper:: isRunning()\n";
         try
         {
             return mThreadManager.isRunning();
@@ -473,6 +492,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::setDefaultMaxSizeQueues(const long long defaultMaxSizeQueues)
     {
+        // std::cout << "wrapper:: setDefaultMaxSizeQueues(...)\n";   
         try
         {
             mThreadManager.setDefaultMaxSizeQueues(defaultMaxSizeQueues);
@@ -486,6 +506,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     bool WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::tryEmplace(TDatumsSP& tDatums)
     {
+        // std::cout << "wrapper:: tryEmplace(tDatums)\n";   
         try
         {
             if (!mUserWs[int(WorkerType::Input)].empty())
@@ -503,6 +524,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     bool WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::waitAndEmplace(TDatumsSP& tDatums)
     {
+        // std::cout << "wrapper:: waitAndEmplace(tDatums)" << "\n";
         try
         {
             if (!mUserWs[int(WorkerType::Input)].empty())
@@ -520,6 +542,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     bool WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::waitAndEmplace(cv::Mat& cvMat)
     {
+        // std::cout << "wrapper:: waitAndEmplace(cvMat)" << "\n";
         try
         {
             // Create new datum
@@ -542,6 +565,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     bool WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::tryPush(const TDatumsSP& tDatums)
     {
+        // std::cout << "wrapper:: tryPush(tDatums)\n";   
         try
         {
             if (!mUserWs[int(WorkerType::Input)].empty())
@@ -559,6 +583,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     bool WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::waitAndPush(const TDatumsSP& tDatums)
     {
+        // std::cout << "wrapper:: waitAndPush(tDatums)\n";   
         try
         {
             if (!mUserWs[int(WorkerType::Input)].empty())
@@ -576,6 +601,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     bool WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::waitAndPush(const cv::Mat& cvMat)
     {
+        // std::cout << "wrapper:: waitAndPush(cvMat)\n";   
         try
         {
             // Create new datum
@@ -598,6 +624,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     bool WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::tryPop(TDatumsSP& tDatums)
     {
+        // std::cout << "wrapper:: tryPop(tDatums)\n";   
         try
         {
             if (!mUserWs[int(WorkerType::Output)].empty())
@@ -615,6 +642,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     bool WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::waitAndPop(TDatumsSP& tDatums)
     {
+        // std::cout << "wrapper:: waitAndPop(tDatums)\n";
         try
         {
             if (!mUserWs[int(WorkerType::Output)].empty())
@@ -631,12 +659,15 @@ namespace op
 
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     bool WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::emplaceAndPop(TDatumsSP& tDatums)
-    {
+    {   
+        // std::cout << "wrapper:: emplaceAndPop(tDatums)" << "\n";
         try
         {
             // Run waitAndEmplace + waitAndPop
             if (waitAndEmplace(tDatums))
+            {
                 return waitAndPop(tDatums);
+            }
             return false;
         }
         catch (const std::exception& e)
@@ -649,6 +680,7 @@ namespace op
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     TDatumsSP WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::emplaceAndPop(const cv::Mat& cvMat)
     {
+        // std::cout << "wrapper:: emplaceAndPop(cvMat)" << "\n";
         try
         {
             // Create new datum

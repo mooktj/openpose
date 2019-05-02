@@ -1,4 +1,5 @@
 #include <openpose/wrapper/wrapperStructGui.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -8,5 +9,6 @@ namespace op
         guiVerbose{guiVerbose_},
         fullScreen{fullScreen_}
     {
+    	// std::cout << "wrapperStructGui:: WrapperStructGui(...) constructor\n";
     }
 }

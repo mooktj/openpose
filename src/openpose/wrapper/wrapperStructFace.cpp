@@ -1,4 +1,5 @@
 #include <openpose/wrapper/wrapperStructFace.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -13,5 +14,6 @@ namespace op
         alphaHeatMap{alphaHeatMap_},
         renderThreshold{renderThreshold_}
     {
+        // std::cout << "wrapperStructFace:: WrapperStructFace(...) constructor\n";
     }
 }

@@ -1,4 +1,5 @@
 #include <openpose/wrapper/wrapperStructExtra.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -11,5 +12,6 @@ namespace op
         tracking{tracking_},
         ikThreads{ikThreads_}
     {
+        // std::cout << "wrapperStructExtra:: WrapperStructExtra(...) constructor\n";
     }
 }

@@ -1,4 +1,5 @@
 #include <openpose/wrapper/wrapperStructHand.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -16,5 +17,6 @@ namespace op
         alphaHeatMap{alphaHeatMap_},
         renderThreshold{renderThreshold_}
     {
+        // std::cout << "wrapperStructHand:: WrapperStructHand(...) constructor\n";
     }
 }

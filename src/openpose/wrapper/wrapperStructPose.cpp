@@ -1,4 +1,5 @@
 #include <openpose/wrapper/wrapperStructPose.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -39,5 +40,9 @@ namespace op
         upsamplingRatio{upsamplingRatio_},
         enableGoogleLogging{enableGoogleLogging_}
     {
+        // std::cout << "wrapperStructPose:: WrapperStructPose(...) constructor\n";
+        // std::cout << "---->wrapperStructPose:: poseMode_ = " << (int)poseMode_ << "\n";
+        // std::cout << "---->wrapperStructPose:: modelFolder_ = " << modelFolder_ << "\n";
+        // std::cout << "---->wrapperStructPose:: protoTxtPath_ = " << protoTxtPath_ << "\n";
     }
 }

@@ -1,4 +1,5 @@
 #include <openpose/wrapper/wrapperStructInput.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -21,5 +22,6 @@ namespace op
         undistortImage{undistortImage_},
         numberViews{numberViews_}
     {
+        // std::cout << "wrapperStructInput:: WrapperStructInput(...) constructor\n";
     }
 }

@@ -2,6 +2,8 @@
 #include <openpose/utilities/check.hpp>
 #include <openpose/utilities/flagsToOpenPose.hpp>
 
+#include <iostream>
+
 namespace op
 {
     PoseMode flagsToPoseMode(const int poseModeInt)
@@ -32,11 +34,20 @@ namespace op
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
             // Body pose
             if (poseModeString == "BODY_25")
+            {
+                // std::cout << "flagsToOpenPose:: flagsToPoseModel:: poseModeString == BODY_25\n";
                 return PoseModel::BODY_25;
+            }
             else if (poseModeString == "COCO")
+            {
+                // std::cout << "flagsToOpenPose:: flagsToPoseModel:: poseModeString == COCO\n";
                 return PoseModel::COCO_18;
+            }
             else if (poseModeString == "MPI")
+            {
+                // std::cout << "flagsToOpenPose:: flagsToPoseModel:: poseModeString == MPI\n";
                 return PoseModel::MPI_15;
+            }
             else if (poseModeString == "MPI_4_layers")
                 return PoseModel::MPI_15_4;
             else if (poseModeString == "BODY_19")
@@ -317,6 +328,8 @@ namespace op
 
     Point<int> flagsToPoint(const std::string& pointString, const std::string& pointExample)
     {
+        // std::cout << "flagsToOpenPose:: flagsToPoint:: pointString: " << pointString << "\n";
+        // std::cout << "flagsToOpenPose:: flagsToPoint:: pointExample: " << pointExample << "\n";
         try
         {
             Point<int> point;

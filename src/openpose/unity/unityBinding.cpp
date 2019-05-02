@@ -3,6 +3,7 @@
 
 // OpenPose dependencies
 #include <openpose/headers.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -414,6 +415,7 @@ namespace op
     // Main
     void openpose_main()
     {
+        std::cout << "unityBinding:: openpose_main()\n";
         try
         {
             // Starting
@@ -543,6 +545,7 @@ namespace op
             bool addPartCandidates, float renderThreshold, int numberPeopleMax,
             bool maximizePositives, double fpsMax, char* protoTxtPath, char* caffeModelPath, float upsamplingRatio)
         {
+            std::cout << "unityBinding:: _OPConfigurePose\n";
             try
             {
                 spWrapperStructPose = std::make_shared<WrapperStructPose>(
@@ -636,7 +639,7 @@ namespace op
 
         OP_API void _OPConfigureOutput(
             double verbose, char* writeKeypoint, uchar writeKeypointFormat, // DataFormat
-            char* writeJson, char* writeCocoJson, char* writeCocoFootJson, int writeCocoJsonVariant, char* writeImages,
+            char* writeJson, char* writeCocoJson, int writeCocoJsonVariants, int writeCocoJsonVariant, char* writeImages,
             char* writeImagesFormat, char* writeVideo, double writeVideoFps, bool writeVideoWithAudio,
             char* writeHeatMaps, char* writeHeatMapsFormat, char* writeVideo3D, char* writeVideoAdam, char* writeBvh,
             char* udpHost, char* udpPort)
@@ -645,7 +648,7 @@ namespace op
             {
                 spWrapperStructOutput = std::make_shared<WrapperStructOutput>(
                     verbose, writeKeypoint, (DataFormat) writeKeypointFormat, writeJson, writeCocoJson,
-                    writeCocoFootJson, writeCocoJsonVariant, writeImages, writeImagesFormat, writeVideo, writeVideoFps,
+                    writeCocoJsonVariants, writeCocoJsonVariant, writeImages, writeImagesFormat, writeVideo, writeVideoFps,
                     writeVideoWithAudio, writeHeatMaps, writeHeatMapsFormat, writeVideo3D, writeVideoAdam, writeBvh,
                     udpHost, udpPort);
             }

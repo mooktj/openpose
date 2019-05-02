@@ -1,10 +1,11 @@
 #include <openpose/wrapper/wrapperStructOutput.hpp>
+#include <iostream>
 
 namespace op
 {
     WrapperStructOutput::WrapperStructOutput(
         const double verbose_, const std::string& writeKeypoint_, const DataFormat writeKeypointFormat_,
-        const std::string& writeJson_, const std::string& writeCocoJson_, const std::string& writeCocoFootJson_,
+        const std::string& writeJson_, const std::string& writeCocoJson_, const int writeCocoJsonVariants_,
         const int writeCocoJsonVariant_, const std::string& writeImages_, const std::string& writeImagesFormat_,
         const std::string& writeVideo_, const double writeVideoFps_, const bool writeVideoWithAudio_,
         const std::string& writeHeatMaps_, const std::string& writeHeatMapsFormat_, const std::string& writeVideo3D_,
@@ -15,7 +16,7 @@ namespace op
         writeKeypointFormat{writeKeypointFormat_},
         writeJson{writeJson_},
         writeCocoJson{writeCocoJson_},
-        writeCocoFootJson{writeCocoFootJson_},
+        writeCocoJsonVariants{writeCocoJsonVariants_},
         writeCocoJsonVariant{writeCocoJsonVariant_},
         writeImages{writeImages_},
         writeImagesFormat{writeImagesFormat_},
@@ -30,5 +31,6 @@ namespace op
         udpHost{udpHost_},
         udpPort{udpPort_}
     {
+        // std::cout << "wrapperStructOuput:: WrapperStructOutput(...) constructor\n";
     }
 }

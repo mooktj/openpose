@@ -5,6 +5,9 @@
 #include <openpose/core/opOutputToCvMat.hpp>
 #include <openpose/thread/worker.hpp>
 
+#include <iostream>
+#include <string>
+
 namespace op
 {
     template<typename TDatums>
@@ -32,6 +35,8 @@ namespace op
 
 // Implementation
 #include <openpose/utilities/pointerContainer.hpp>
+#include <openpose/vnect/vNect.hpp>
+
 namespace op
 {
     template<typename TDatums>
@@ -57,13 +62,26 @@ namespace op
         {
             if (checkNoNullNorEmpty(tDatums))
             {
+                std::cout << "~~wOpOutputToCvMat\n";
                 // Debugging log
                 dLog("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
                 // Profiling speed
                 const auto profilerKey = Profiler::timerInit(__LINE__, __FUNCTION__, __FILE__);
                 // float* -> cv::Mat
                 for (auto& tDatumPtr : *tDatums)
+                {   
+                    auto& poseKeypoints = tDatumPtr->poseKeypoints;
+
+                    // std::cout << "wOpOutputToCvMat BEFORE: tDatumPtr->cvOutputData is empty? " << tDatumPtr->cvOutputData.empty() << "\n";
+                    // std::cout << "  wOpOutputToCvMat:: poseKeypoints.getSize(1): " << poseKeypoints.getSize(1) << ", getSize(2): " << poseKeypoints.getSize(2) << ", getSize(3): " << poseKeypoints.getSize(3) << "\n";
+                   
                     tDatumPtr->cvOutputData = spOpOutputToCvMat->formatToCvMat(tDatumPtr->outputData);
+                    
+
+                    vNectPostForward(tDatumPtr);
+                    // std::cout << "wOpOutputToCvMat AFTER: tDatumPtr->cvOutputData is empty? " << tDatumPtr->cvOutputData.empty() << "\n";
+                    // std::cout << "  wOpOutputToCvMat:: poseKeypoints.getSize(1): " << poseKeypoints.getSize(1) << ", getSize(2): " << poseKeypoints.getSize(2) << ", getSize(3): " << poseKeypoints.getSize(3) << "\n";
+                }
                 // Profiling speed
                 Profiler::timerEnd(profilerKey);
                 Profiler::printAveragedTimeMsOnIterationX(profilerKey, __LINE__, __FUNCTION__, __FILE__);

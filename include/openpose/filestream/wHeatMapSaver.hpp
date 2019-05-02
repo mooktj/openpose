@@ -4,6 +4,7 @@
 #include <openpose/core/common.hpp>
 #include <openpose/filestream/heatMapSaver.hpp>
 #include <openpose/thread/workerConsumer.hpp>
+#include <iostream>
 
 namespace op
 {
@@ -57,6 +58,7 @@ namespace op
         {
             if (checkNoNullNorEmpty(tDatums))
             {
+                std::cout << "****^^^^Mookie the Rookie Cookie Smoothie**presents--wHeatMapSaver in workConsumer" << "\n";
                 // Debugging log
                 dLog("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
                 // Profiling speed

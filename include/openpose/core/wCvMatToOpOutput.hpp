@@ -58,6 +58,8 @@ namespace op
         {
             if (checkNoNullNorEmpty(tDatums))
             {
+
+                std::cout << "**WCvMatToOpOutput\n";
                 // Debugging log
                 dLog("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
                 // T* to T

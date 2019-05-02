@@ -17,6 +17,15 @@ namespace op
      */
     struct OP_API Datum
     {
+        // **** VNect ADDED **** //
+        // ------------------------------------ VNect parameters ------------------------------------ //
+        bool renderOpenPose;
+
+        bool renderVNect;
+        // ONLY VALID IF VNECT IS ON
+        std::vector<float> neckDiffs;
+        // ONLY VALID IF VNECT IS ON
+        std::vector<float> chestDiffs;        
         // ---------------------------------------- ID parameters ---------------------------------------- //
         unsigned long long id; /**< Datum ID. Internally used to sort the Datums if multi-threading is used. */
 

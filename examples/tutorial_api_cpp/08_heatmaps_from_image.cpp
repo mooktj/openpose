@@ -8,6 +8,7 @@
 #include <openpose/flags.hpp>
 // OpenPose dependencies
 #include <openpose/headers.hpp>
+#include <iostream>
 
 // Custom OpenPose flags
 // Producer
@@ -77,6 +78,7 @@ void printKeypoints(const std::shared_ptr<std::vector<std::shared_ptr<op::Datum>
         if (datumsPtr != nullptr && !datumsPtr->empty())
         {
             const auto& poseHeatMaps = datumsPtr->at(0)->poseHeatMaps;
+            // std::cout << "********Mook::log .... in printKeypoints: looking for poseHeatMaps: " << poseHeatMaps << "\n";
             const auto numberChannels = poseHeatMaps.getSize(0);
             const auto height = poseHeatMaps.getSize(1);
             const auto width = poseHeatMaps.getSize(2);
@@ -164,7 +166,7 @@ void configureWrapper(op::Wrapper& opWrapper)
         // Output (comment or use default argument to disable any output)
         const op::WrapperStructOutput wrapperStructOutput{
             FLAGS_cli_verbose, FLAGS_write_keypoint, op::stringToDataFormat(FLAGS_write_keypoint_format),
-            FLAGS_write_json, FLAGS_write_coco_json, FLAGS_write_coco_foot_json, FLAGS_write_coco_json_variant,
+            FLAGS_write_json, FLAGS_write_coco_json, FLAGS_write_coco_json_variants, FLAGS_write_coco_json_variant,
             FLAGS_write_images, FLAGS_write_images_format, FLAGS_write_video, FLAGS_write_video_fps,
             FLAGS_write_video_with_audio, FLAGS_write_heatmaps, FLAGS_write_heatmaps_format, FLAGS_write_video_3d,
             FLAGS_write_video_adam, FLAGS_write_bvh, FLAGS_udp_host, FLAGS_udp_port};
@@ -207,6 +209,7 @@ int tutorialApiCpp()
         auto datumProcessed = opWrapper.emplaceAndPop(imageToProcess);
         if (datumProcessed != nullptr)
         {
+            std::cout << "********Mook::log .... in dataProcessed != nullptr\n";
             printKeypoints(datumProcessed);
             if (!FLAGS_no_display)
             {

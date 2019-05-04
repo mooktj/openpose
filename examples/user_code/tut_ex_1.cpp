@@ -6,6 +6,7 @@
 #include <openpose/flags.hpp>
 // OpenPose dependencies
 #include <openpose/headers.hpp>
+#include <string>
 
 // Custom OpenPose flags
 // Producer
@@ -27,6 +28,16 @@ void display(const std::shared_ptr<std::vector<std::shared_ptr<op::Datum>>>& dat
             // datum.poseKeypoints: Array<float> with the estimated pose
         if (datumsPtr != nullptr && !datumsPtr->empty())
         {
+            // auto& joints3d = datumsPtr->at(0)->joints_3d_root_relative;
+            // std::cout << "joints3d size: " << joints3d.size() << "\n";
+            // for(int i = 0; i < joints3d.size(); i++)
+            // {
+            //     std::cout << "i: " << i << "\n";
+            //     for(int j = 0; j < joints3d.at(i).size(); j++)
+            //     {
+            //         std::cout << joints3d.at(i).at(j).at(0) << ", " << joints3d.at(i).at(j).at(1) << ", " << joints3d.at(i).at(j).at(2) << "\n";
+            //     }
+            // }
             // Display image
             cv::imshow(OPEN_POSE_NAME_AND_VERSION + " - Tutorial C++ API", datumsPtr->at(0)->cvOutputData);
             cv::waitKey(0);
@@ -92,6 +103,7 @@ void configureWrapper(op::Wrapper& opWrapper)
         op::Profiler::setDefaultX(FLAGS_profile_speed);
 
         FLAGS_model_pose = "MPI";
+        // FLAGS_part_candidates = true;
 
         // Apply GFlags to program variables
         const auto poseMode = op::flagsToPoseMode(FLAGS_body);
@@ -122,6 +134,19 @@ void configureWrapper(op::Wrapper& opWrapper)
         const auto upsamplingRatio = (float)FLAGS_upsampling_ratio;
         const auto enableGoogleLogging = true;
 
+        // const auto vnectEnable = true;
+        // const auto vModelFolder = "";
+        // const auto vProtoTxtFile = "";
+        // const auto vTrainedModelFile = "";
+
+        // const op::WrapperStructVnect wrapperStructVnect{
+        //     vnectEnable,
+        //     vModelFolder,
+        //     vProtoTxtFile,
+        //     vTrainedModelFile
+        // };
+
+        // opWrapper.configure(wrapperStructVnect);
 
 
         // std::cout << "keypoints_ordering:: caffeModelPath = " << caffeModelPath << "\n";
@@ -152,7 +177,8 @@ void configureWrapper(op::Wrapper& opWrapper)
             protoTxtPath, 
             caffeModelPath, 
             (float)upsamplingRatio,
-            enableGoogleLogging };
+            enableGoogleLogging,
+            FLAGS_vnect_set };
 
         opWrapper.configure(wrapperStructPose);
 
@@ -164,6 +190,148 @@ void configureWrapper(op::Wrapper& opWrapper)
     }
     catch (const std::exception& e)
     {
+        op::error(e.what(), __LINE__, __FUNCTION__, __FILE__);
+    }
+}
+
+void write3dJointsVNect(const std::shared_ptr<std::vector<std::shared_ptr<op::Datum>>>& datumsPtr)
+{
+    try
+    {
+        if (datumsPtr != nullptr && !datumsPtr->empty())
+        {
+            ////////////---- GET JOINTS 3D ROOT RELATIVE ----////////////
+            auto& joints3d = datumsPtr->at(0)->joints_3d_root_relative;
+            std::cout << "joints3d size: " << joints3d.size() << "\n";
+            // std::cout << "joints3d (int)size: " << (int)joints3d.size() << "\n";
+            // for(int i = 0; i < joints3d.size(); i++)
+            // {
+            //     std::cout << "i: " << i << "\n";
+            //     for(int j = 0; j < joints3d.at(i).size(); j++)
+            //     {
+            //         // std::cout << "j = " << j << ", size: " << joints3d.at(i).at(j).size() << "\n";
+            //         for(int k = 0; k < joints3d.at(i).at(j).size(); k++)
+            //         {
+            //             std::cout << joints3d.at(i).at(j).at(k) << " ";
+            //         } 
+            //         std::cout << "\n";
+            //     }
+            // }
+            /////////////////////////////////////////////////////////////
+
+            /////////---- GET NECK DIFFS ----////////////////////////////
+            auto& neckDiffs = datumsPtr->at(0)->neckDiffs;
+            std::cout << "neckDiffs size: " << neckDiffs.size() << "\n";
+            for(int i = 0; i < neckDiffs.size(); i++)
+            {
+                std::cout << i << ": " << neckDiffs.at(i) << "\n";
+            }
+
+            ////////---- GET CHEST DIFFS ----////////////////////////////
+            auto& chestDiffs = datumsPtr->at(0)->chestDiffs;
+            std::cout << "chestDiffs size: " << chestDiffs.size() << "\n";
+            for(int i = 0; i < chestDiffs.size(); i++)
+            {
+                std::cout << i << ": " << chestDiffs.at(i) << "\n";
+            }
+            ///////----- GET AVG DIFFS FROM NECK AND CHEST -----/////////
+            // float avgDiffs[joints3d.size()][joints3d.size()];
+            // std::cout << "avgDiffs size: " << sizeof(avgDiffs) << "\n";
+            // std::cout << "float size: " << sizeof(float) << "\n";
+            // int numPoses = joints3d.size();
+            // int numPoseRelations = (numPoses * (numPoses - 1))/2;
+            // int relationI = 0;
+
+            // for(int i = 0; i < numPoses; i++)
+            // {
+            //     for(int j = 0; j < numPoses; j++)
+            //     {
+            //         avgDiffs[i][j] = neckDiffs.at(relationI) - chestDiffs.at(relationI++);
+            //     }
+            // }
+
+            // std::cout << "under numPoseRelations\n";
+            // for(int i = 0; i < numPoseRelations; i++)
+            // {
+            //     std::cout << "i: " << i << "\n";
+            // }
+
+            std::vector<float> avgDiffs;
+
+            for(int i = 0; i < neckDiffs.size(); i++)
+            {
+                avgDiffs.push_back((neckDiffs.at(i)+chestDiffs.at(i)) / 2);
+            }
+
+            std::cout << "printing avgDiffs\n";
+            for(int i = 0; i < avgDiffs.size(); i++)
+            {
+                std::cout << i << ". " << avgDiffs.at(i) << "\n";
+            }
+            /////////////////////////////////////////////////////////////
+
+            /////////---- GET FLOOR LEVELS ----//////////////////////////
+            auto& floorLevels = datumsPtr->at(0)->floorLevels;
+            std::cout << "floorLevels\n";
+            for(int i = 0; i < floorLevels.size(); i++)
+            {
+                std::cout << i << ". " << floorLevels.at(i) << "\n";
+            }
+
+            /////////////////////////////////////////////////////////////
+
+
+
+                /*---- PRINT VNECT_3D_JOINTS.TXT ----*/
+        // "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/3d_joints/"
+        std::string pathToWrite = "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/OP_VNECT/outputs-3-5-19/";
+        std::string fileName = "joints_3d";
+        std::string saveToName = pathToWrite + fileName + ".txt";
+        std::ofstream out3djoints(saveToName);
+        std::streambuf *coutbuf3djoints = std::cout.rdbuf();
+        std::cout.rdbuf(out3djoints.rdbuf());
+
+        // std::cout << "joints3d size: " << joints3d.size() << "\n";
+        // std::cout << "joints3d.at(0) size: " << joints3d.at(0).size() << "\n";
+        // std::cout << "joints3d.at(0).at(0) size: " << joints3d.at(0).at(0).size() << "\n";
+
+        for(int i = 0; i < joints3d.size(); i++)
+        {
+            for(int j = 0; j < joints3d.at(i).size(); j++)
+            {   
+                std::cout << "pose_" << i << " ";
+                for(int k = 0; k < joints3d.at(i).at(j).size(); k++)
+                {
+                    std::cout << joints3d.at(i).at(j).at(k) << " ";
+                }
+                std::cout << "\n";
+            }
+            std::cout << "\n";
+        }
+
+        std::cout << "POSE_END\n\n";
+
+        for(auto x : avgDiffs)
+        {
+            std::cout << "avgDiffs " << x << "\n";
+        }
+
+        std::cout << "AVGDIFFS_END\n\n";
+
+        for(auto y : floorLevels)
+        {
+            std::cout << "floorLevels " << y << "\n";
+        }
+
+        std::cout << "FLOORLEVELS_END\n\n";
+
+        std::cout.rdbuf(coutbuf3djoints);
+
+        }
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "ERROR WRITING VNECT\n";
         op::error(e.what(), __LINE__, __FUNCTION__, __FILE__);
     }
 }
@@ -194,8 +362,11 @@ int tutorialApiCpp()
         if (datumProcessed != nullptr)
         {
             // printKeypoints(datumProcessed);
+            write3dJointsVNect(datumProcessed);
+
             if (!FLAGS_no_display)
                 display(datumProcessed);
+
         }
         else
             op::log("Image could not be processed.", op::Priority::High);

@@ -10,6 +10,7 @@
 #include <openpose/wrapper/wrapperStructInput.hpp>
 #include <openpose/wrapper/wrapperStructOutput.hpp>
 #include <openpose/wrapper/wrapperStructPose.hpp>
+// #include <openpose/wrapper/wrapperStructVnect.hpp>
 
 #include<iostream>
 
@@ -83,6 +84,7 @@ namespace op
 #include <openpose/tracking/headers.hpp>
 #include <openpose/utilities/fileSystem.hpp>
 #include <openpose/utilities/standard.hpp>
+// #include <openpose/vnect/headers.hpp>
 namespace op
 {
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
@@ -92,6 +94,7 @@ namespace op
         const WrapperStructFace& wrapperStructFace, const WrapperStructHand& wrapperStructHand,
         const WrapperStructExtra& wrapperStructExtra, const WrapperStructInput& wrapperStructInput,
         const WrapperStructOutput& wrapperStructOutput, const WrapperStructGui& wrapperStructGui,
+        // const WrapperStructVnect& wrapperStructVnect,
         const std::array<std::vector<TWorker>, int(WorkerType::Size)>& userWs,
         const std::array<bool, int(WorkerType::Size)>& userWsOnNewThread)
     {
@@ -328,16 +331,13 @@ namespace op
                         if (renderOutputGpu)
                         {
                             // std::cout << "------>renderOutputGpu: " << renderOutputGpu << "\n";
-                            int mook_i = 0;
                             for (const auto& poseExtractorNet : poseExtractorNets)
                             {
-                                // std::cout << "-------->poseExtractorNet: " << mook_i << "\n";
                                 poseGpuRenderers.emplace_back(std::make_shared<PoseGpuRenderer>(
                                     wrapperStructPose.poseModel, poseExtractorNet, wrapperStructPose.renderThreshold,
                                     wrapperStructPose.blendOriginalFrame, alphaKeypoint,
                                     alphaHeatMap, wrapperStructPose.defaultPartToRender
                                 ));
-                                mook_i++;
                             }
                         }
                         // CPU rendering
@@ -384,7 +384,7 @@ namespace op
                             poseExtractorNets.at(i), keepTopNPeople, personIdExtractor, personTrackers,
                             wrapperStructPose.numberPeopleMax, wrapperStructExtra.tracking);
                         // std::cout << "********---------->make_shared<WPoseExtractor>(poseExtractor)\n";
-                        poseExtractorsWs.at(i) = {std::make_shared<WPoseExtractor<TDatumsSP>>(poseExtractor)};
+                        poseExtractorsWs.at(i) = {std::make_shared<WPoseExtractor<TDatumsSP>>(poseExtractor, wrapperStructPose.vnectEnable)};
                         // // Just OpenPose keypoint detector
                         // poseExtractorsWs.at(i) = {std::make_shared<WPoseExtractorNet<TDatumsSP>>(
                         //     poseExtractorNets.at(i))};
@@ -402,6 +402,23 @@ namespace op
                     //     for (auto& wPose : poseExtractorsWs)
                     //         wPose.emplace_back(std::make_shared<WKeepTopNPeople<TDatumsSP>>(keepTopNPeople));
                     // }
+
+                    // std::vector<std::shared_ptr<PoseExtractorNet>> poseExtractorNets;
+                    // std::vector<TWorker> vNectWorkers;
+                    // **** VNECT WORKER ADDED **** //
+                    if(wrapperStructPose.vnectEnable)
+                    {
+                        std::cout << "get vnectEnable!\n";
+                    //     std::cout << "poseExtractorsWs size(): " << poseExtractorsWs.size() << "\n";
+                    //     const auto poseVnect = std::make_shared<PoseVnect>(
+                    //                                 wrapperStructVnect.vnectEnable,
+                    //                                 wrapperStructVnect.modelFolder,
+                    //                                 wrapperStructVnect.protoTxtFile,
+                    //                                 wrapperStructVnect.trainedModelFile);
+                    //     for (auto& wPose : poseExtractorsWs)
+                    //         wPose.emplace_back(std::make_shared<WPoseVnect<TDatumsSP>>(poseVnect));
+                    }
+
                 }
                 log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
                 // std::cout << "-----------------END OF CONFIGURING wrapperStructPose-----------------" << "\n";
@@ -655,7 +672,7 @@ namespace op
                     log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
                     postProcessingWs = mergeVectors(postProcessingWs, cpuRenderers);
                     const auto opOutputToCvMat = std::make_shared<OpOutputToCvMat>();
-                    postProcessingWs.emplace_back(std::make_shared<WOpOutputToCvMat<TDatumsSP>>(opOutputToCvMat));
+                    postProcessingWs.emplace_back(std::make_shared<WOpOutputToCvMat<TDatumsSP>>(opOutputToCvMat, wrapperStructPose.vnectEnable));
                 }
                 log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
                 // Re-scale pose if desired

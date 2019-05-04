@@ -11,6 +11,7 @@
 #include <openpose/wrapper/wrapperStructInput.hpp>
 #include <openpose/wrapper/wrapperStructOutput.hpp>
 #include <openpose/wrapper/wrapperStructPose.hpp>
+// #include <openpose/wrapper/wrapperStructVnect.hpp>
 
 #include <iostream>
 
@@ -103,6 +104,11 @@ namespace op
          * Analogous to configure() but applied to the GUI (WrapperStructGui)
          */
         void configure(const WrapperStructGui& wrapperStructGui);
+
+        /**
+         * Analogous to configure() but applied to VNect (WrapperStructVnect)
+         */
+        // void configure(const WrapperStructVnect& wrapperStructVnect);
 
         /**
          * Function to start multi-threading.
@@ -240,6 +246,7 @@ namespace op
         WrapperStructInput mWrapperStructInput;
         WrapperStructOutput mWrapperStructOutput;
         WrapperStructGui mWrapperStructGui;
+        // WrapperStructVnect mWrapperStructVnect;
 
         
         // User configurable workers
@@ -421,6 +428,20 @@ namespace op
             error(e.what(), __LINE__, __FUNCTION__, __FILE__);
         }
     }
+    // **** VNECT ADDED **** //
+    // template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
+    // void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::configure(const WrapperStructVnect& wrapperStructVnect)
+    // {
+    //     // std::cout << "wrapper:: configure(wrapperStructGui)\n";   
+    //     try
+    //     {
+    //         mWrapperStructVnect = wrapperStructVnect;
+    //     }
+    //     catch (const std::exception& e)
+    //     {
+    //         error(e.what(), __LINE__, __FUNCTION__, __FILE__);
+    //     }
+    // }
 
     template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
     void WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::exec()
@@ -431,6 +452,7 @@ namespace op
             configureThreadManager<TDatum, TDatums, TDatumsSP, TWorker>(
                 mThreadManager, mMultiThreadEnabled, mThreadManagerMode, mWrapperStructPose, mWrapperStructFace,
                 mWrapperStructHand, mWrapperStructExtra, mWrapperStructInput, mWrapperStructOutput, mWrapperStructGui,
+                // mWrapperStructVnect,
                 mUserWs, mUserWsOnNewThread);
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
             mThreadManager.exec();
@@ -450,6 +472,7 @@ namespace op
             configureThreadManager<TDatum, TDatums, TDatumsSP, TWorker>(
                 mThreadManager, mMultiThreadEnabled, mThreadManagerMode, mWrapperStructPose, mWrapperStructFace,
                 mWrapperStructHand, mWrapperStructExtra, mWrapperStructInput, mWrapperStructOutput, mWrapperStructGui,
+                // mWrapperStructVnect,
                 mUserWs, mUserWsOnNewThread);
             log("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
             mThreadManager.start();

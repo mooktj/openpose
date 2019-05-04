@@ -203,6 +203,10 @@ namespace op
          */
         bool enableGoogleLogging;
 
+        bool vnectEnable;
+
+        // bool openposeRender;
+
         /**
          * Constructor of the struct.
          * It has the recommended and default values we recommend for each element of the struct.
@@ -220,7 +224,9 @@ namespace op
             const ScaleMode heatMapScaleMode = ScaleMode::ZeroToOne, const bool addPartCandidates = false,
             const float renderThreshold = 0.05f, const int numberPeopleMax = -1, const bool maximizePositives = false,
             const double fpsMax = -1., const std::string& protoTxtPath = "", const std::string& caffeModelPath = "",
-            const float upsamplingRatio = 0.f, const bool enableGoogleLogging = true);
+            const float upsamplingRatio = 0.f, const bool enableGoogleLogging = true,
+            const bool vnectEnable = false//, const bool openposeRender = false
+            );
     };
 }
 

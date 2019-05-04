@@ -12,7 +12,9 @@ namespace op
         const ScaleMode heatMapScaleMode_, const bool addPartCandidates_, const float renderThreshold_,
         const int numberPeopleMax_, const bool maximizePositives_, const double fpsMax_,
         const std::string& protoTxtPath_, const std::string& caffeModelPath_, const float upsamplingRatio_,
-        const bool enableGoogleLogging_) :
+        const bool enableGoogleLogging_,
+        const bool vnectEnable_) : //, const bool openposeRender_) :
+    
         poseMode{poseMode_},
         netInputSize{netInputSize_},
         outputSize{outputSize_},
@@ -38,11 +40,15 @@ namespace op
         protoTxtPath{protoTxtPath_},
         caffeModelPath{caffeModelPath_},
         upsamplingRatio{upsamplingRatio_},
-        enableGoogleLogging{enableGoogleLogging_}
+        enableGoogleLogging{enableGoogleLogging_},
+        vnectEnable{vnectEnable_}
+        //openPoseRender{openposeRender_}
+
     {
         // std::cout << "wrapperStructPose:: WrapperStructPose(...) constructor\n";
         // std::cout << "---->wrapperStructPose:: poseMode_ = " << (int)poseMode_ << "\n";
-        // std::cout << "---->wrapperStructPose:: modelFolder_ = " << modelFolder_ << "\n";
-        // std::cout << "---->wrapperStructPose:: protoTxtPath_ = " << protoTxtPath_ << "\n";
+        // // std::cout << "---->wrapperStructPose:: modelFolder_ = " << modelFolder_ << "\n";
+        // // std::cout << "---->wrapperStructPose:: protoTxtPath_ = " << protoTxtPath_ << "\n";
+        // std::cout << "---->addPartCandidates_: " << addPartCandidates_ << "\n";
     }
 }

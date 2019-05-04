@@ -14,7 +14,7 @@ namespace op
     class WOpOutputToCvMat : public Worker<TDatums>
     {
     public:
-        explicit WOpOutputToCvMat(const std::shared_ptr<OpOutputToCvMat>& opOutputToCvMat);
+        explicit WOpOutputToCvMat(const std::shared_ptr<OpOutputToCvMat>& opOutputToCvMat, const bool vnectEnable);
 
         virtual ~WOpOutputToCvMat();
 
@@ -24,6 +24,7 @@ namespace op
 
     private:
         const std::shared_ptr<OpOutputToCvMat> spOpOutputToCvMat;
+        const bool spVnectEnable;
 
         DELETE_COPY(WOpOutputToCvMat);
     };
@@ -40,8 +41,9 @@ namespace op
 namespace op
 {
     template<typename TDatums>
-    WOpOutputToCvMat<TDatums>::WOpOutputToCvMat(const std::shared_ptr<OpOutputToCvMat>& opOutputToCvMat) :
-        spOpOutputToCvMat{opOutputToCvMat}
+    WOpOutputToCvMat<TDatums>::WOpOutputToCvMat(const std::shared_ptr<OpOutputToCvMat>& opOutputToCvMat, const bool vnectEnable) :
+        spOpOutputToCvMat{opOutputToCvMat},
+        spVnectEnable{vnectEnable}
     {
     }
 
@@ -62,7 +64,7 @@ namespace op
         {
             if (checkNoNullNorEmpty(tDatums))
             {
-                std::cout << "~~wOpOutputToCvMat\n";
+                // std::cout << "~~wOpOutputToCvMat\n";
                 // Debugging log
                 dLog("", Priority::Low, __LINE__, __FUNCTION__, __FILE__);
                 // Profiling speed
@@ -70,18 +72,27 @@ namespace op
                 // float* -> cv::Mat
                 for (auto& tDatumPtr : *tDatums)
                 {   
-                    auto& poseKeypoints = tDatumPtr->poseKeypoints;
+                    // auto& poseKeypoints = tDatumPtr->poseKeypoints;
 
                     // std::cout << "wOpOutputToCvMat BEFORE: tDatumPtr->cvOutputData is empty? " << tDatumPtr->cvOutputData.empty() << "\n";
                     // std::cout << "  wOpOutputToCvMat:: poseKeypoints.getSize(1): " << poseKeypoints.getSize(1) << ", getSize(2): " << poseKeypoints.getSize(2) << ", getSize(3): " << poseKeypoints.getSize(3) << "\n";
-                   
+                    // std::string pathToWrite = "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/OP_VNECT/outputs-1-5-19/";
+                    // std::string vname = "media_2_croppedImg_" + std::to_string(2);
                     tDatumPtr->cvOutputData = spOpOutputToCvMat->formatToCvMat(tDatumPtr->outputData);
                     
-
-                    vNectPostForward(tDatumPtr);
+                    // ------- GET VNECT WORKING (NEED TO MIGRATE TO VNECT OWN CLASS) --------//
+                    // if(tDatumPtr->renderVNect) {
+                    if(spVnectEnable) {
+                        std::cout << "wOpOutputToCvMat:: spVnectEnable!\n";
+                        vNectPostForward(tDatumPtr);   
+                    }
+                    // }
+                    // write3dJointsToFile(tDatumPtr, vname, pathToWrite);
                     // std::cout << "wOpOutputToCvMat AFTER: tDatumPtr->cvOutputData is empty? " << tDatumPtr->cvOutputData.empty() << "\n";
                     // std::cout << "  wOpOutputToCvMat:: poseKeypoints.getSize(1): " << poseKeypoints.getSize(1) << ", getSize(2): " << poseKeypoints.getSize(2) << ", getSize(3): " << poseKeypoints.getSize(3) << "\n";
                 }
+               
+                
                 // Profiling speed
                 Profiler::timerEnd(profilerKey);
                 Profiler::printAveragedTimeMsOnIterationX(profilerKey, __LINE__, __FUNCTION__, __FILE__);

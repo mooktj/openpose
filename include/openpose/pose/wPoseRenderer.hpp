@@ -108,11 +108,11 @@ namespace op
                 {
                     // cv::imshow("tDatumPtr outputDate before", tDatumPtr->cvOutputData);
                     // std::cout << "wPoseRenderer:: BEFORE: tDatumPtr->cvOutputData is empty? " << tDatumPtr->cvOutputData.empty() << "\n";
-                    if(tDatumPtr->renderOpenPose) {
+                    // if(tDatumPtr->renderOpenPose) {
                         tDatumPtr->elementRendered = spPoseRenderer->renderPose(
                             tDatumPtr->outputData, tDatumPtr->poseKeypoints, (float)tDatumPtr->scaleInputToOutput,
                             (float)tDatumPtr->scaleNetToOutput);
-                    }
+                    // }
                     // std::cout << "wPoseRenderer:: AFTER: tDatumPtr->cvOutputData is empty? " << tDatumPtr->cvOutputData.empty() << "\n";
                     // cv::imshow("tDatumPtr outputDate after", tDatumPtr->cvOutputData);
                     // std::cout << "elementRendered: " << tDatumPtr->elementRendered.first << ", " << tDatumPtr->elementRendered.second << "\n";
@@ -121,98 +121,99 @@ namespace op
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////                    
-                    // **** VNect ADDED **** //
-                    if(tDatumPtr->renderVNect) {
-                        std::cout << "wPoseRenderer:: ~~Datum's renderVNect is ON\n";
+                    // // **** VNect ADDED **** //
+                    // if(tDatumPtr->renderVNect) {
+                    //     std::cout << "wPoseRenderer:: ~~Datum's renderVNect is ON\n";
 
-                        auto& poseKeypoints = tDatumPtr->poseKeypoints;
+                    //     auto& poseKeypoints = tDatumPtr->poseKeypoints;
 
-                        std::vector<std::vector<float>> poses;
-                        int numPoses = poseKeypoints.getSize(0);
-                        int numEachPose = poseKeypoints.getSize(1)*poseKeypoints.getSize(2);
+                    //     std::vector<std::vector<float>> poses;
+                    //     int numPoses = poseKeypoints.getSize(0);
+                    //     int numEachPose = poseKeypoints.getSize(1)*poseKeypoints.getSize(2);
 
-                        // GET X, Y LOCATIONS OF EACH POSE
-                        std::cout << "numPoses: " << numPoses << "\n";
-                        std::cout << "poseKeypoints.getSize(1): " << poseKeypoints.getSize(1) << ", getSize(2): " << poseKeypoints.getSize(2) << ", getSize(3): " << poseKeypoints.getSize(3) << "\n";
-                        std::cout << "numEachPose: " << numEachPose << "\n";
+                    //     // GET X, Y LOCATIONS OF EACH POSE
+                    //     std::cout << "numPoses: " << numPoses << "\n";
+                    //     std::cout << "poseKeypoints.getSize(1): " << poseKeypoints.getSize(1) << ", getSize(2): " << poseKeypoints.getSize(2) << ", getSize(3): " << poseKeypoints.getSize(3) << "\n";
+                    //     std::cout << "numEachPose: " << numEachPose << "\n";
 
-                        for(int pose = 0; pose < numPoses; pose++)
-                        {
-                            std::vector<float> posePoints_x;
-                            std::vector<float> posePoints_y;
+                    //     for(int pose = 0; pose < numPoses; pose++)
+                    //     {
+                    //         std::vector<float> posePoints_x;
+                    //         std::vector<float> posePoints_y;
 
-                            // std::cout << "    pose: " << pose << "\n";
+                    //         // std::cout << "    pose: " << pose << "\n";
 
-                            for(int j = pose*numEachPose; j < (pose+1)*numEachPose; j += 3)
-                            {
-                                // std::cout << poseKeypoints.at(j) << ", " << poseKeypoints.at(j+1) << "\n";
+                    //         for(int j = pose*numEachPose; j < (pose+1)*numEachPose; j += 3)
+                    //         {
+                    //             // std::cout << poseKeypoints.at(j) << ", " << poseKeypoints.at(j+1) << "\n";
 
-                                posePoints_x.push_back(poseKeypoints.at(j));
-                                posePoints_y.push_back(poseKeypoints.at(j+1));
-                            }
-                            poses.push_back(posePoints_x);
-                            poses.push_back(posePoints_y);
-                        }
+                    //             posePoints_x.push_back(poseKeypoints.at(j));
+                    //             posePoints_y.push_back(poseKeypoints.at(j+1));
+                    //         }
+                    //         poses.push_back(posePoints_x);
+                    //         poses.push_back(posePoints_y);
+                    //     }
 
-                        // std::cout << "poses size: " << poses.size() << "\n";
-                        // std::cout << "poses(0) size: " << poses.at(0).size() << "\n";
+                    //     // std::cout << "poses size: " << poses.size() << "\n";
+                    //     // std::cout << "poses(0) size: " << poses.at(0).size() << "\n";
 
-                        std::vector<std::vector<float>> posesBounds;
-                        for(unsigned int i = 0; i < poses.size(); i += 2)
-                        {
-                            std::vector<float> bounds;
-                            bounds.push_back(vNectFindMin(poses.at(i))); //x //need to deal with 0.00 ?
-                            bounds.push_back(vNectFindMax(poses.at(i))); //x //need to deal with 0.00 ?
-                            bounds.push_back(vNectFindMin(poses.at(i+1))); //y //need to deal with 0.00 ?
-                            bounds.push_back(vNectFindMax(poses.at(i+1))); //y //need to deal with 0.00 ?
-                            posesBounds.push_back(bounds);
-                        }
+                    //     std::vector<std::vector<float>> posesBounds;
+                    //     for(unsigned int i = 0; i < poses.size(); i += 2)
+                    //     {
+                    //         std::vector<float> bounds;
+                    //         bounds.push_back(vNectFindMin(poses.at(i))); //x //need to deal with 0.00 ?
+                    //         bounds.push_back(vNectFindMax(poses.at(i))); //x //need to deal with 0.00 ?
+                    //         bounds.push_back(vNectFindMin(poses.at(i+1))); //y //need to deal with 0.00 ?
+                    //         bounds.push_back(vNectFindMax(poses.at(i+1))); //y //need to deal with 0.00 ?
+                    //         posesBounds.push_back(bounds);
+                    //     }
 
-                        cv::Mat image = tDatumPtr->cvInputData;
+                    //     cv::Mat image = tDatumPtr->cvInputData;
 
-                        cv::imshow("wPoseRenderer image", image);
+                    //     cv::imshow("wPoseRenderer image", image);
 
-                        for(int i = 0; i < posesBounds.size(); i++)
-                        {
-                            std::cout << "i: " << i << "\n";
-                            std::cout << "left (x min): " << posesBounds.at(i).at(0) << "\n";
-                            std::cout << "right (x max): " << posesBounds.at(i).at(1) << "\n";
-                            std::cout << "bottom (y min): " << posesBounds.at(i).at(2) << "\n";
-                            std::cout << "top (y max): " << posesBounds.at(i).at(3) << "\n";
-                            float left = posesBounds.at(i).at(0);
-                            float right = posesBounds.at(i).at(1);
-                            float bottom = posesBounds.at(i).at(2);
-                            float top = posesBounds.at(i).at(3);
+                    //     for(int i = 0; i < posesBounds.size(); i++)
+                    //     {
+                    //         std::cout << "i: " << i << "\n";
+                    //         std::cout << "left (x min): " << posesBounds.at(i).at(0) << "\n";
+                    //         std::cout << "right (x max): " << posesBounds.at(i).at(1) << "\n";
+                    //         std::cout << "bottom (y min): " << posesBounds.at(i).at(2) << "\n";
+                    //         std::cout << "top (y max): " << posesBounds.at(i).at(3) << "\n";
+                    //         float left = posesBounds.at(i).at(0);
+                    //         float right = posesBounds.at(i).at(1);
+                    //         float bottom = posesBounds.at(i).at(2);
+                    //         float top = posesBounds.at(i).at(3);
 
-                            float offset = 30;
+                    //         float offset = 30;
 
-                            float leftB = (left-offset < 0) ? 0 : left-offset;
-                            float rightB = (right+offset > image.cols) ? image.cols : right+offset;
-                            float bottomB = (bottom-offset < 0) ? 0 : bottom-offset;
-                            float topB = (top+offset > image.rows) ? image.rows : top+offset;
+                    //         float leftB = (left-offset < 0) ? 0 : left-offset;
+                    //         float rightB = (right+offset > image.cols) ? image.cols : right+offset;
+                    //         float bottomB = (bottom-offset < 0) ? 0 : bottom-offset;
+                    //         float topB = (top+offset > image.rows) ? image.rows : top+offset;
 
-                            cv::Mat croppedImg = image(cv::Range(bottomB,topB), cv::Range(leftB,rightB));
-                            std::string vname = "media_2_croppedImg_" + std::to_string(i);
-                            std::string name = "into Vnect " + vname;
+                    //         cv::Mat croppedImg = image(cv::Range(bottomB,topB), cv::Range(leftB,rightB));
+                    //         std::string vname = "media_2_croppedImg_" + std::to_string(i);
+                    //         std::string name = "into Vnect " + vname;
 
-                            cv::Mat noPadCropped = image(cv::Range(bottom,top), cv::Range(left,right));
-                            cv::imshow(name, noPadCropped);
+                    //         cv::Mat noPadCropped = image(cv::Range(bottom,top), cv::Range(left,right));
+                    //         cv::imshow(name, noPadCropped);
 
 
-                            // vnect(croppedImg, vname);
-                            std::string pathToWrite = "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/OP_VNECT/outputs-1-5-19/";
-                            vNectForward(croppedImg, vname, pathToWrite);
-                        }
+                    //         // vnect(croppedImg, vname);
+                    //         std::string pathToWrite = "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/OP_VNECT/outputs-1-5-19/";
+                    //         std::vector<std::vector<float>> joints_3d = vNectForward(croppedImg, vname, pathToWrite);
+                    //         tDatumPtr->joints_3d_root_relative.push_back(joints_3d);
+                    //     }
 
-                        // vNectPostForward(tDatumPtr);
+                    //     // vNectPostForward(tDatumPtr);
 
-                        std::cout << "--------------------END VNECT--------------------\n";
-                        // ----------- END VNECT ----------- //
+                    //     std::cout << "--------------------END VNECT--------------------\n";
+                    //     // ----------- END VNECT ----------- //
+                    // }
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                    }
                 }
                 // Profiling speed
                 Profiler::timerEnd(profilerKey);
@@ -369,7 +370,7 @@ namespace op
                 // /////////////////////////////////////////////////////////////////////////////////////////
                 // /////////////////////////////////////////////////////////////////////////////////////////
 
-                std::cout << "---->wPoseRenderer work successful\n";
+                // std::cout << "---->wPoseRenderer work successful\n";
             }
         }
         catch (const std::exception& e)

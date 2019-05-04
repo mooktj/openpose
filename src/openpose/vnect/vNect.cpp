@@ -36,23 +36,76 @@ namespace op
         return min;
     }
 
+  //   void write3dJointsToFile(const std::shared_ptr<op::Datum>& tDatum, std::string croppedImgName, std::string pathToWrite)
+  //   {
+  //       std::cout << "joints_3d_root_relative size: " << tDatum->joints_3d_root_relative.size() << "\n";
+  //       // for(int i = 0; i < tDatum->joints_3d_root_relative.size(); i++)
+  //       // {
+  //       //     std::cout << "i: " << i << "\n";
+  //       //     for(int j = 0; j < tDatum->joints_3d_root_relative.at(i).size(); j++)
+  //       //     {
+  //       //         std::cout << tDatum->joints_3d_root_relative.at(i).at(j).at(0) << ", " << tDatum->joints_3d_root_relative.at(i).at(j).at(1) << ", " << tDatum->joints_3d_root_relative.at(i).at(j).at(2) << "\n";
+  //       //     }
+  //       // }
+
+  //       std::cout << "neckDiffs\n";
+  //       for(int i = 0; i < (int)tDatum->neckDiffs.size(); i++)
+  //       {
+  //       	std::cout << i << ". " << tDatum->neckDiffs.at(i) << "\n";
+  //       }
+
+  //       std::cout << "chestDiffs\n";
+  //       for(int i = 0; i < (int)tDatum->chestDiffs.size(); i++)
+  //       {
+  //       	std::cout << i << ". " << tDatum->chestDiffs.at(i) << "\n";
+  //       }
+
+  //       std::cout << "floorLevels\n";
+  //       for(int i = 0; i < (int)tDatum->floorLevels.size(); i++)
+  //       {
+  //       	std::cout << i << ". " << tDatum->floorLevels.at(i) << "\n";
+  //       }
+
+  //   			/*---- PRINT VNECT_3D_JOINTS.TXT ----*/
+		// // // "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/3d_joints/"
+		// // std::string saveToName = pathToWrite + croppedImgName + ".txt";
+		// // std::ofstream out3djoints(saveToName);
+		// // std::streambuf *coutbuf3djoints = std::cout.rdbuf();
+		// // std::cout.rdbuf(out3djoints.rdbuf());
+
+		// // // int joint_i = 0;
+		// // for(auto joint : joints_3d_root_relative)
+		// // {
+		// // 	// if(joint_i == 15) break;
+		// // 	std::cout << joint.at(0) << " ";
+		// // 	std::cout << joint.at(1) << " ";
+		// // 	std::cout << joint.at(2) << " ";
+		// // 	std::cout << "\n";
+		// // 	// joint_i++;
+		// // }
+
+		// // std::cout.rdbuf(coutbuf3djoints);
+  //   }
+
     void vNectPostForward(const std::shared_ptr<op::Datum>& datumsPtr)
     {
     	auto& poseKeypoints = datumsPtr->poseKeypoints;
     	std::vector<float> poseDistances;
 
-    	// for (int person = 0 ; person < poseKeypoints.getSize(0) - 1 ; person++)
-     //    {
-     //        float neckDiff = poseKeypoints[{person+1, 1, 0}] - poseKeypoints[{person, 1, 0}];
-     //        float chestDiff = poseKeypoints[{person+1, 14, 0}] - poseKeypoints[{person, 14, 0}];
+    	for (int person = 0 ; person < poseKeypoints.getSize(0) - 1 ; person++)
+        {
+            float neckDiff = (poseKeypoints[{person+1, 1, 0}] - poseKeypoints[{person, 1, 0}]);
+            float chestDiff = (poseKeypoints[{person+1, 14, 0}] - poseKeypoints[{person, 14, 0}]);
 
-     //        float lowestAnkle_1 = poseKeypoints[{person, 13, 1}] > poseKeypoints[{person, 10, 1}] ? poseKeypoints[{person, 13, 1}] : poseKeypoints[{person, 10, 1}];  // y values of {LAnkle: 13}, {RAnkel: 10}
-     //        float lowestAnkle_2 = poseKeypoints[{person+1, 13, 1}] > poseKeypoints[{person+1, 10, 1}] ? poseKeypoints[{person+1, 13, 1}] : poseKeypoints[{person+1, 10, 1}];
+            float lowestAnkle_1 = poseKeypoints[{person, 13, 1}] > poseKeypoints[{person, 10, 1}] ? poseKeypoints[{person, 13, 1}] : poseKeypoints[{person, 10, 1}];  // y values of {LAnkle: 13}, {RAnkel: 10}
+            float lowestAnkle_2 = poseKeypoints[{person+1, 13, 1}] > poseKeypoints[{person+1, 10, 1}] ? poseKeypoints[{person+1, 13, 1}] : poseKeypoints[{person+1, 10, 1}];
 
-     //        float ankleRatio = lowestAnkle_1 > lowestAnkle_2 ? (lowestAnkle_1 - lowestAnkle_2) : (lowestAnkle_2 - lowestAnkle_1);
+            float ankleRatio = lowestAnkle_1 > lowestAnkle_2 ? (lowestAnkle_1 - lowestAnkle_2) : (lowestAnkle_2 - lowestAnkle_1);
 
-     //        // poseDistances.push_back(neckDiff);
-     //    }
+            datumsPtr->neckDiffs.push_back(neckDiff);
+            datumsPtr->chestDiffs.push_back(chestDiff);
+            // poseDistances.push_back(neckDiff);
+        }
 
 		std::vector<std::vector<float>> jointsRad;
 		std::vector<std::vector<cv::Point>> jointsCen;
@@ -178,29 +231,29 @@ namespace op
         }
 
         // "-----:::: jointsRad ::::-----" //
-        for(int i = 0; i < jointsRad.size(); i++)
-        {
-            std::cout << "jointsRad i = " << i << "\n";
-            for(int j = 0; j < jointsRad.at(i).size(); j++)
-            {
-                std::cout << "  " << j << ". " << jointsRad.at(i).at(j) << "\n";
-            }
-        }
+        // for(int i = 0; i < jointsRad.size(); i++)
+        // {
+        //     std::cout << "jointsRad i = " << i << "\n";
+        //     for(int j = 0; j < jointsRad.at(i).size(); j++)
+        //     {
+        //         std::cout << "  " << j << ". " << jointsRad.at(i).at(j) << "\n";
+        //     }
+        // }
 
         // "-----:::: jointsCen ::::-----" //
-        for(int i = 0; i < jointsCen.size(); i++)
-        {
-            std::cout << "jointsCen i = " << i << "\n";
-            for(int j = 0; j < jointsCen.at(i).size(); j++)
-            {
-                std::cout << "  " << j << ". " << jointsCen.at(i).at(j) << "\n";
-            }
-        }
+        // for(int i = 0; i < jointsCen.size(); i++)
+        // {
+        //     std::cout << "jointsCen i = " << i << "\n";
+        //     for(int j = 0; j < jointsCen.at(i).size(); j++)
+        //     {
+        //         std::cout << "  " << j << ". " << jointsCen.at(i).at(j) << "\n";
+        //     }
+        // }
 
         std::vector<std::vector<cv::Point>> jointsCenExtr;
 
         // "-----:::: find extreme points at head, floor left and floor right ::::-----" //
-        for(int i = 0; i < jointsRad.size(); i++)
+        for(int i = 0; i < (int)jointsRad.size(); i++)
         {
             std::vector<cv::Point> currExtr;
             for(int j = 0; j < jointsRad.at(i).size(); j++)
@@ -226,7 +279,7 @@ namespace op
             jointsCenExtr.push_back(currExtr);
         }
 
-        for(int i = 0; i < jointsCenExtr.size(); i++)
+        for(int i = 0; i < (int)jointsCenExtr.size(); i++)
         {
             int maxHeight = jointsCenExtr.at(i).at(1).y > jointsCenExtr.at(i).at(2).y ? abs(jointsCenExtr.at(i).at(1).y - jointsCenExtr.at(i).at(0).y) : abs(jointsCenExtr.at(i).at(2).y - jointsCenExtr.at(i).at(0).y);
             // std::cout << "jointsCenExtr.at(i).at(1).y - jointsCenExtr.at(i).at(2).y ==> " << jointsCenExtr.at(i).at(1).y - jointsCenExtr.at(i).at(2).y << "\n";
@@ -241,7 +294,7 @@ namespace op
 		// "------------- CHECK JOINTS RAD AND CEN -------------" //
         std::vector<std::vector<float>> jointsChose;
         std::vector<std::vector<cv::Point>> jointsChosePoints;
-		for(int i = 0; i < jointsRad.size(); i++)
+		for(int i = 0; i < (int)jointsRad.size(); i++)
         {            
             std::vector<float> choPart;
             std::vector<cv::Point> choPoints;
@@ -268,34 +321,35 @@ namespace op
 
         // "------------- JOINTS AVG -------------" //
         std::vector<float> poseFloorLevel; 
-        for(int i = 0; i < jointsChose.size(); i++)
+        for(int i = 0; i < (int)jointsChose.size(); i++)
         {
-            std::cout << "i: " << i << "\n";
-            std::cout << "floor: " << jointsChosePoints.at(i).at(1).y + jointsChose.at(i).at(1) << "\n";
+            // std::cout << "i: " << i << "\n";
+            // std::cout << "floor: " << jointsChosePoints.at(i).at(1).y + jointsChose.at(i).at(1) << "\n";
             float floorLevel = jointsChosePoints.at(i).at(1).y + jointsChose.at(i).at(1);
             poseFloorLevel.push_back(floorLevel);
-            for(int j = 0; j < jointsChose.at(i).size(); j++)
-            {
-                std::cout << jointsChose.at(i).at(j) << "\n";
-                std::cout << jointsChosePoints.at(i).at(j) << "\n";
-            }
+            // for(int j = 0; j < jointsChose.at(i).size(); j++)
+            // {
+            //     // std::cout << jointsChose.at(i).at(j) << "\n";
+            //     std::cout << jointsChosePoints.at(i).at(j) << "\n";
+            // }
         }
 
 		// for now, kind of assuming every pose has the same height or whatever height given by VNect
-		for(int i = 0; i < poseFloorLevel.size()-1; i++)
+		for(int i = 0; i < (int)poseFloorLevel.size()-1; i++)
 		{
-			std::cout << "floor level difference: " << (float) abs(poseFloorLevel.at(i) - poseFloorLevel.at(i+1)) << "\n";
+			// std::cout << "floor level difference: " << (float) abs(poseFloorLevel.at(i) - poseFloorLevel.at(i+1)) << "\n";
+			datumsPtr->floorLevels.push_back((float) abs(poseFloorLevel.at(i) - poseFloorLevel.at(i+1)));
 		}
 		// compare radius
 		// depth depends on poses interdependency positions mainly, not where there are in the original image
 
-		cv::imshow("currPose_output", currPose_output);
+		// cv::imshow("currPose_output", currPose_output);
 
 
     }
 
 
-    void vNectForward(cv::Mat croppedImg, std::string croppedImgName, std::string pathToWrite)
+    std::vector<std::vector<float>> vNectForward(cv::Mat croppedImg, std::string croppedImgName, std::string pathToWrite)
     {
     	caffe::Caffe::set_mode(caffe::Caffe::GPU);
 
@@ -358,11 +412,9 @@ namespace op
 	        int start = (half_dst - half_src);
 	        int end = (half_dst + half_src) + remainder_src;
 
-	        std::cout << "------------MOOK CHECKPOINT 1------\n";
-
 	        cv::copyMakeBorder(sample, sample, top, bottom, start, start - remainder_src , cv::BORDER_CONSTANT, 0);
 	        // cv::imshow("sample less than input network", sample);
-	        std::cout << "sample size: " << sample.size() << "\n";
+	        // std::cout << "sample size: " << sample.size() << "\n";
 	    } 
 	    else
 	    {
@@ -405,14 +457,14 @@ namespace op
 	    int remainder_v2 = length_v2 % 2;
 
 	    int start_v2 = (half - half_v2);
-	    int end_v2 = (half + half_v2) + remainder_v2;
+	    // int end_v2 = (half + half_v2) + remainder_v2;
 
 	    int length_v3 = sample_resized_v3.rows;
 	    int half_v3 = std::floor(length_v3/2);
 	    int remainder_v3 = length_v3 % 2;
 
 	    int start_v3 = (half - half_v3);
-	    int end_v3 = (half + half_v3) + remainder_v3;
+	    // int end_v3 = (half + half_v3) + remainder_v3;
 
 	    cv::Mat sample_resized_v2_padded;
 	    cv::Mat sample_resized_v3_padded;
@@ -450,7 +502,7 @@ namespace op
 
 
 	    /* PREPROCESS BATCH */
-	    for(int i = 0; i < imgs.size(); i++)
+	    for(int i = 0; i < (int)imgs.size(); i++)
 	    {
 	        // cv::Mat curr_img = imgs.at(i);
 	        cv::Mat curr_img;
@@ -528,7 +580,7 @@ namespace op
 	                    zhm_h_w = std::vector<int>(outputblob->shape().at(2), outputblob->shape().at(3));
 	                    break;
 	                }
-	            default: std::cout << "OUTPUT OUT OF BOUND!!!"; break;
+	            default: std::cout << "VNECT ERROR!!! HMS OUTPUT OUT OF BOUND!!!"; break;
 	        }
 	        outputblobi++;
 	    }
@@ -536,8 +588,8 @@ namespace op
 	    /* ------------- AVERAGE THE HEATMAPS OUT -------------  */
 	    int nums_out = testnet->output_blobs().at(0)->shape(0);
 	    int channels_out = testnet->output_blobs().at(0)->shape(1);
-	    int height_out = testnet->output_blobs().at(0)->shape(2);
-	    int width_out = testnet->output_blobs().at(0)->shape(3);
+	    // int height_out = testnet->output_blobs().at(0)->shape(2);
+	    // int width_out = testnet->output_blobs().at(0)->shape(3);
 
 	    std::vector<std::vector<cv::Mat>> h_sum;
 	    std::vector<std::vector<cv::Mat>> x_sum;
@@ -675,7 +727,7 @@ namespace op
 	    std::vector<float> z_values;
 
 
-	    for(int i = 0; i < max_locs.size(); i++)
+	    for(int i = 0; i < (int)max_locs.size(); i++)
 	    {
 	        x_values.push_back(xm_avg.at(i).at<float>(max_locs.at(i).y,max_locs.at(i).x) * 10);
 	        y_values.push_back(ym_avg.at(i).at<float>(max_locs.at(i).y,max_locs.at(i).x) * 10);
@@ -689,7 +741,7 @@ namespace op
 	    root_relative_joints.push_back(y_values.at(14));
 	    root_relative_joints.push_back(z_values.at(14));
 
-	    for(int i = 0; i < max_locs.size(); i++)
+	    for(int i = 0; i < (int)max_locs.size(); i++)
 	    {
 	        float x = x_values.at(i);
 	        float y = y_values.at(i);
@@ -707,35 +759,37 @@ namespace op
 	    
 	    cv::Mat image_2d = img_square;
 
-	    for(int i = 0; i < joints_2d.size(); i++)
+	    for(int i = 0; i < (int)joints_2d.size(); i++)
 	    {
 	        cv::circle(image_2d, joints_2d.at(i), 3, cv::Scalar(0,0,255), -1, 8);
 	    }
 
-	    cv::imshow(croppedImgName, image_2d);
+	    // cv::imshow(croppedImgName, image_2d);
 
 		/*---- PRINT VNECT_3D_JOINTS.TXT ----*/
-		// "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/3d_joints/"
-		std::string saveToName = pathToWrite + croppedImgName + ".txt";
-		std::ofstream out3djoints(saveToName);
-		std::streambuf *coutbuf3djoints = std::cout.rdbuf();
-		std::cout.rdbuf(out3djoints.rdbuf());
+		// // "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/3d_joints/"
+		// std::string saveToName = pathToWrite + croppedImgName + ".txt";
+		// std::ofstream out3djoints(saveToName);
+		// std::streambuf *coutbuf3djoints = std::cout.rdbuf();
+		// std::cout.rdbuf(out3djoints.rdbuf());
 
-		// int joint_i = 0;
-		for(auto joint : joints_3d_root_relative)
-		{
-			// if(joint_i == 15) break;
-			std::cout << joint.at(0) << " ";
-			std::cout << joint.at(1) << " ";
-			std::cout << joint.at(2) << " ";
-			std::cout << "\n";
-			// joint_i++;
-		}
+		// // int joint_i = 0;
+		// for(auto joint : joints_3d_root_relative)
+		// {
+		// 	// if(joint_i == 15) break;
+		// 	std::cout << joint.at(0) << " ";
+		// 	std::cout << joint.at(1) << " ";
+		// 	std::cout << joint.at(2) << " ";
+		// 	std::cout << "\n";
+		// 	// joint_i++;
+		// }
 
-		std::cout.rdbuf(coutbuf3djoints);
+		// std::cout.rdbuf(coutbuf3djoints);
 
 		// ----- TESTING draw3DPython ----- //
-		std::vector<std::string> fileNames;
-		draw3DPython(fileNames);
+		// std::vector<std::string> fileNames;
+		// draw3DPython(fileNames);
+
+		return joints_3d_root_relative;
     }
 }

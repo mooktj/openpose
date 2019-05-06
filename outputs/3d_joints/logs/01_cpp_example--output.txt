@@ -1,0 +1,177 @@
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+threadManager:: constructor ThreadManager(...)
+wrapper:: constructor, WrapperT(threadManagerMode)
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+wrapper:: start()
+wrapperAuxiliary:: configureThreadManager(...)
+wrapperAuxiliary:: wrapperConfigureSanityChecks(...)
+Auto-detecting all available GPUs... Detected 1 GPU(s), using 1 of them starting at GPU 0.
+poseExtractorCaffe:: constructor
+---->poseExtractorCaffe:: USE_CAFFE
+wrapperAuxiliary:: end hpp file
+poseExtractorNet:: initializationOnThread()
+---->Deep net initialization ==== netInitializationOnThread() call poseExtractorCaffe??
+poseExtractorCaffe:: netInitializationOnThread()
+---->in mEnableNet
+wrapper:: emplaceAndPop(cvMat)
+wrapper:: emplaceAndPop(tDatums)
+wrapper:: waitAndEmplace(tDatums)
+wrapper:: waitAndPop(tDatums)
+ThreadManager:: waitAndPop(tDatums)
+---->USE_CAFFE enabled! and netinitializationOnThread successful
+poseExtractor:: forwardPass(...)
+poseExtractorCaffe:: forwardPass(inputNetData, inputDataSize, scaleInputToNetInputs, poseNetOutput)
+---->USE_CUDA enabled!
+---->USE_CAFFE enabled! and forwardPass successful
+---->spPoseExtractorNet->forwardPass
+---->wPoseExtractor work successful
+***************OpenPose demo successfully finished. Total time: 2.952958 seconds.
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+threadManager:: constructor ThreadManager(...)
+wrapperStructPose:: constructor
+wrapper:: constructor, WrapperT(threadManagerMode)
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+***************OpenPose demo successfully finished. Total time: 0.000022 seconds.
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+***************OpenPose demo successfully finished. Total time: 0.000014 seconds.
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+threadManager:: constructor ThreadManager(...)
+wrapperStructPose:: constructor
+wrapper:: constructor, WrapperT(threadManagerMode)
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+***************OpenPose demo successfully finished. Total time: 0.000022 seconds.
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+threadManager:: constructor ThreadManager(...)
+wrapperStructPose:: constructor
+wrapper:: constructor, WrapperT(threadManagerMode)
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+***************OpenPose demo successfully finished. Total time: 0.000022 seconds.
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+***************OpenPose demo successfully finished. Total time: 0.000069 seconds.
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+***************OpenPose demo successfully finished. Total time: 0.000025 seconds.
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+***************OpenPose demo successfully finished. Total time: 0.000023 seconds.
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+***************OpenPose demo successfully finished. Total time: 0.000031 seconds.
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+***************OpenPose demo successfully finished. Total time: 0.000034 seconds.
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+***************Starting OpenPose demo...
+***************Configuring OpenPose...
+***************01_cpp_example:: done opWrapper{op::ThreadManagerMode::Asynchronous}
+***************Starting thread(s)...
+***************OpenPose demo successfully finished. Total time: 0.000020 seconds.

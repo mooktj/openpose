@@ -1,0 +1,116 @@
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+----------------------------------------Starting OpenPose demo...----------------------------------------
+----------------------------------------Configuring OpenPose...----------------------------------------
+threadManager:: ThreadManager(...) constructor 
+wrapperStructPose:: constructor
+wrapperStructFace:: WrapperStructFace(...) constructor
+wrapperStructHand:: WrapperStructHand(...) constructor
+wrapperStructExtra:: WrapperStructExtra(...) constructor
+wrapperStructInput:: WrapperStructInput(...) constructor
+wrapperStructOuput:: WrapperStructOutput(...) constructor
+wrapperStructGui:: WrapperStructGui(...) constructor
+wrapper:: WrapperT(threadManagerMode) constructor
+opWrapper{op::ThreadManagerMode::Asynchronous} done,, about to configureWrapper(opWrapper)
+wrapperStructPose:: constructor
+wrapper:: configure(wrapperStructPose)
+----------------------------------------Starting thread(s)...----------------------------------------
+wrapper:: start()
+wrapperAuxiliary:: configureThreadManager(...)
+wrapperAuxiliary:: wrapperConfigureSanityChecks(...)
+Auto-detecting all available GPUs... Detected 1 GPU(s), using 1 of them starting at GPU 0.
+worker:: Worker() constructor
+worker:: Worker() constructor
+worker:: Worker() constructor
+poseExtractorNet:: PoseExtractorNet(...) constructor
+poseExtractorCaffe:: constructor
+---->poseExtractorCaffe:: USE_CAFFE
+poseExtractor:: PoseExtractor(...) constructor
+worker:: Worker() constructor
+wPoseExtractor:: WPoseExtractor(...) constructor
+worker:: Worker() constructor
+worker:: Worker() constructor
+worker:: Worker() constructor
+worker:: Worker() constructor
+wrapperAuxiliary:: end hpp file
+thread:: Thread(.1.) constructor
+thread:: Thread(.1.) constructor
+thread:: Thread(.1.) constructor
+queueBase:: QueueBase(...) constructor
+queue:: Queue(...) constructor
+queueBase:: QueueBase(...) constructor
+queue:: Queue(...) constructor
+queueBase:: QueueBase(...) constructor
+queue:: Queue(...) constructor
+queueBase:: QueueBase(...) constructor
+queue:: Queue(...) constructor
+subThread:: SubThread(...) constructor
+subThread:: SubThread(...) constructor
+subThread:: SubThread(...) constructor
+thread:: startInThread()
+thread:: join()
+thread:: startInThread()
+thread:: join()
+thread:: threadFunction()
+thread:: startInThread()
+thread:: join()
+thread:: initializationOnThread()
+subThread:: initializationOnThread()
+worker:: initializationOnThreadNoException()
+worker:: initializationOnThreadNoException()
+worker:: initializationOnThreadNoException()
+worker:: initializationOnThreadNoException()
+---->!subThread->work()
+thread:: threadFunction()
+thread:: initializationOnThread()
+subThread:: initializationOnThread()
+worker:: initializationOnThreadNoException()
+wPoseExtractor:: initializationOnThread()
+poseExtractor:: initializationOnThread()
+poseExtractorNet:: initializationOnThread()
+---->Deep net initialization ==== netInitializationOnThread() call poseExtractorCaffe??
+poseExtractorCaffe:: netInitializationOnThread()
+---->in mEnableNet
+----------------------------------------opWrapper.started()----------------------------------------
+thread:: threadFunction()
+
+---->!subThread->work()
+---->USE_CAFFE enabled! and netinitializationOnThread successful
+worker:: initializationOnThreadNoException()
+
+subThread:: workTWorkers(...)
+worker:: checkAndWork(tDatums)
+wPoseExtractor:: work(tDatums)
+---->wPoseExtractor:: tDatums is not Null or Empty
+------>wPoseExtractor:: going to forwardPass to spPoseExtractor
+poseExtractor:: forwardPass(...)
+poseExtractorCaffe:: forwardPass(inputNetData, inputDataSize, scaleInputToNetInputs, poseNetOutput)
+---->!subThread->work()
+worker:: checkAndWork(tDatums)
+---->!subThread->work()
+subThread:: workTWorkers(...)
+worker:: checkAndWork(tDatums)
+worker:: checkAndWork(tDatums)
+worker:: checkAndWork(tDatums)
+worker:: checkAndWork(tDatums)
+---->!subThread->work()
+
+worker:: checkAndWork(tDatums)
+worker:: checkAndWork(tDatums)
+worker:: checkAndWork(tDatums)
+worker:: checkAndWork(tDatums)
+---->!subThread->work()
+subThread:: workTWorkers(...)
+worker:: checkAndWork(tDatums)
+wPoseExtractor:: work(tDatums)
+worker:: checkAndWork(tDatums)
+---->!subThread->work()
+---->!subThread->work()
+----------------------------------------opWrapper emplaced and popped----------------------------------------
+OpenPose demo successfully finished. Total time: 2.707796 seconds.

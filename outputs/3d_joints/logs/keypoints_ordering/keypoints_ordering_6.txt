@@ -1,0 +1,163 @@
+
+
+
+
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+________________________________________________________________________________________
+----------------------------------------Starting OpenPose demo...----------------------------------------
+----------------------------------------Configuring OpenPose...----------------------------------------
+threadManager:: ThreadManager(...) constructor 
+wrapperStructPose:: WrapperStructPose(...) constructor
+wrapperStructFace:: WrapperStructFace(...) constructor
+wrapperStructHand:: WrapperStructHand(...) constructor
+wrapperStructExtra:: WrapperStructExtra(...) constructor
+wrapperStructInput:: WrapperStructInput(...) constructor
+wrapperStructOuput:: WrapperStructOutput(...) constructor
+wrapperStructGui:: WrapperStructGui(...) constructor
+wrapper:: WrapperT(threadManagerMode) constructor
+--------opWrapper{op::ThreadManagerMode::Asynchronous} done,, about to configureWrapper(opWrapper)
+flagsToOpenPose:: flagsToPoseModel:: poseModeString == MPI
+wrapperStructPose:: WrapperStructPose(...) constructor
+wrapper:: configure(wrapperStructPose)
+----------------------------------------Starting thread(s)...----------------------------------------
+wrapper:: start()
+********wrapperAuxiliary:: configureThreadManager(...)
+********---->created producer
+********---->set editable arguments
+********---->initialise user custom workers
+********---->initialise video seek
+********---->set required parameters
+wrapperAuxiliary:: wrapperConfigureSanityChecks(...)
+********---->wrapperConfigureSanityChecks(...) finished
+Auto-detecting all available GPUs... Detected 1 GPU(s), using 1 of them starting at GPU 0.
+********---->got number threads
+********---->set proper format
+********---->set common parameters
+********---->created DatumProducer<TDatum>
+********---->going into Workers
+********-------->numberThreads =1
+********-------->wrapperStructPose.poseMode
+********-------->into Pose estimators
+********------------>poseExtractorNets.emplace_back(<PoseExtractorCaffe>)
+poseExtractorNet:: PoseExtractorNet(...) constructor
+poseExtractorCaffe:: PoseExtractorCaffe(...) constructor
+---->poseExtractorCaffe:: USE_CAFFE
+********-------->into Pose renderers
+********-------->into Pose extractor(s)
+********-------->into Person tracker
+********---------->poseExtractorWs at: 0
+********---------->postExtractor = make_shared<PoseExtractor>
+poseExtractor:: PoseExtractor(...) constructor
+********---------->make_shared<WPoseExtractor>(poseExtractor)
+wPoseExtractor:: WPoseExtractor(...) constructor
+********-------->wrapperStructPose.poseMode DONE!
+********---->Pose renderer(s)
+********---->renderOutput
+********---->going into Sanity checks
+********---->resetting threadManager
+********---->!poseExtractorWs.empty()
+wrapperAuxiliary:: end hpp file
+----------------------------------------opWrapper.started()----------------------------------------
+wPoseExtractor:: initializationOnThread()
+poseExtractor:: initializationOnThread()
+poseExtractorNet:: initializationOnThread()
+---->Deep net initialization ==== netInitializationOnThread() call poseExtractorCaffe??
+poseExtractorCaffe:: netInitializationOnThread()
+---->in mEnableNet
+poseExtractorCaffe:: addCaffeNetOnThread(...)
+poseParameters:: getPoseProtoTxt(...)
+---->poseParameters:: POSE_PROTOTXT.at((int)poseModel): pose/mpi/pose_deploy_linevec.prototxt
+----------------------------------------cv imread image path----------------------------------------
+wrapper:: emplaceAndPop(cvMat)
+datum:: Datum() constructor
+wrapper:: emplaceAndPop(tDatums)
+wrapper:: waitAndEmplace(tDatums)
+wrapper:: waitAndPop(tDatums)
+---->USE_CAFFE enabled! and netinitializationOnThread successful
+---->wPoseExtractor:: tDatums is not Null or Empty
+------>wPoseExtractor:: going to forwardPass to spPoseExtractor
+poseExtractor:: forwardPass(...)
+poseExtractorCaffe:: forwardPass(inputNetData, inputDataSize, scaleInputToNetInputs, poseNetOutput)
+---->poseExtractorCaffe: sanity checked
+---->poseExtractorCaffe: process each image - Caffe deep network
+---->poseExtractorCaffe: reshape blobs if required
+---->poseExtractorCaffe: resize heat maps + merge different scales
+---->poseExtractorCaffe: get peaks by non-maximum Suppression
+poseExtractorNet:: get(...)
+????spNmsCaffe->Forward(..)
+---->poseExtractorCaffe: connecting body parts
+poseExtractorNet:: get(...)
+poseExtractorNet:: get(...)
+poseExtractorNet:: get(...)
+poseExtractorNet:: get(...)
+---->poseExtractorCaffe: re-run on each person
+---->poseExtractorCaffe -> forwardPass(..):: USE_CUDA enabled!
+---->poseExtractorCaffe -> forwardPass(..):: USE_CAFFE enabled! and forwardPass successful
+---->spPoseExtractorNet->forwardPass
+------>wPoseExtractor:: went to forwardPass
+------>wPoseExtractor:: spPoseExtractor->getCandidatesCopy()
+------>wPoseExtractor:: spPoseExtractor->getHeatMapsCopy()
+poseExtractor:: getCandidatesCopy()
+poseExtractorNet:: getCandidatesCopy()
+poseExtractorNet:: checkThread()
+--
+--
+--
+--
+wPoseExtractor:: going to getHeatMapsCopy()
+poseExtractor:: getHeatMapsCopy()
+poseExtractorNet:: getHeatMapsCopy()
+poseExtractorNet:: checkThread()
+poseExtractorCaffe:: getHeatMapSize()
+poseExtractorNet:: checkThread()
+---->poseExtractorNet:: got HeatMapSize()
+poseExtractorNet:: getNumberHeatMapChannels(...)
+poseExtractorNet:: heatMapTypesHas(...)
+poseExtractorNet:: heatMapTypesHas(...)
+poseExtractorNet:: heatMapTypesHas(...)
+---->poseExtractorNet:: heatMaps.reset(...)
+---->heatMaps.getSize(0): 44
+---->heatMaps.getSize(1): 368
+---->heatMaps.getSize(2): 496
+---->heatMaps.getSize(3): 1
+---->heatMaps.getSize(100): 1
+---->getPoseNumberBodyParts(mPoseModel): 15
+---->channelOffset: 182528
+poseExtractorNet:: heatMapTypesHas(...)
+-------->poseExtractorNet:: Body parts----------------------------------------------------------------------------
+poseExtractorCaffe:: getHeatMapGpuConstPtr()
+poseExtractorNet:: checkThread()
+---------->ScaleMode::UnsignedChar
+volumeBodyParts: 2737920
+poseExtractorNet:: heatMapTypesHas(...)
+-------->poseExtractorNet:: Background----------------------------------------------------------------------------
+poseExtractorCaffe:: getHeatMapGpuConstPtr()
+poseExtractorNet:: checkThread()
+poseExtractorNet:: heatMapTypesHas(...)
+-------->poseExtractorNet:: PAFs----------------------------------------------------------------------------
+poseExtractorCaffe:: getHeatMapGpuConstPtr()
+poseExtractorNet:: checkThread()
+volumePAFs: 5110784
+---->poseExtractorNet:: done heatMaps
+--
+--
+--
+--
+poseExtractor:: getPoseKeypoints()
+poseExtractorNet:: getPoseKeypoints()
+poseExtractorNet:: checkThread()
+poseExtractor:: getPoseScores()
+poseExtractorNet:: getPoseScores()
+poseExtractorNet:: checkThread()
+poseExtractor:: getScaleNetToOutput()
+poseExtractorNet:: getScaleNetToOutput()
+poseExtractorNet:: checkThread()
+poseExtractor:: keepTopPeople(...)
+poseExtractor:: extractIdsLockThread(...)
+poseExtractor:: trackLockThread(...)
+---->wPoseExtractor work successful
+----------------------------------------opWrapper emplaced and popped----------------------------------------
+----------------------------------------displayHeatMaps(datumProcessed, desiredChannel)----------------------------------------
+OpenPose demo successfully finished. Total time: 4.755790 seconds.

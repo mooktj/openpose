@@ -1,0 +1,263 @@
+
+
+
+
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+----------------------------------------Starting OpenPose demo...
+**
+**
+----------------------------------------Configuring OpenPose...
+**
+**
+flagsToOpenPose:: flagsToPoseModel:: poseModeString == MPI
+----------------------------------------Starting thread(s)...
+**
+**
+Auto-detecting all available GPUs... Detected 1 GPU(s), using 1 of them starting at GPU 0.
+----------------------------------------opWrapper.started()
+**
+**
+---->poseParameters:: POSE_PROTOTXT.at((int)poseModel): pose/mpi/pose_deploy_linevec.prototxt
+----------------------------------------cv imread image path
+**
+**
+---->wPoseExtractor:: tDatums is not Null or Empty
+------>wPoseExtractor:: going to forwardPass to spPoseExtractor
+
+
+*****************************************************************************************************
+*****************************************************************************************************
+poseExtractorCaffe:: forwardPass(inputNetData, inputDataSize, scaleInputToNetInputs, poseNetOutput)
+              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spNets = 1
+---->poseExtractorCaffe:: mNetInput4DSizes.size() = 0
+---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = 1 1 1 1 (1)
+---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = 4
+---->poseExtractorCaffe:: spHeatMapsBlob count() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob num() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob channels() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob height() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob width() = 1
+              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spHeatMapsBlob = 1
+------>poseExtractorCaffe:: reshape blobs if required where i = 0
+---->poseExtractorCaffe:: spHeatMapsBlob = 44
+---------------------->poseExtractorCaffe forwardPass done 1
+              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spNets = 1
+---->poseExtractorCaffe:: mNetInput4DSizes.size() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = 1 44 368 496 (8031232)
+---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = 4
+---->poseExtractorCaffe:: spHeatMapsBlob count() = 8031232
+---->poseExtractorCaffe:: spHeatMapsBlob num() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob channels() = 44
+---->poseExtractorCaffe:: spHeatMapsBlob height() = 368
+---->poseExtractorCaffe:: spHeatMapsBlob width() = 496
+              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~
+---------------------->poseExtractorCaffe forwardPass done 2
+*****************************************************************************************************
+*****************************************************************************************************
+
+
+----------------------------------------opWrapper emplaced and popped
+**
+**
+----------------------------------------displayHeatMaps(datumProcessed, desiredChannel)
+**
+**
+OpenPose demo successfully finished. Total time: 5.019055 seconds.
+
+
+
+
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+----------------------------------------Starting OpenPose demo...
+**
+**
+----------------------------------------Configuring OpenPose...
+**
+**
+flagsToOpenPose:: flagsToPoseModel:: poseModeString == MPI
+----------------------------------------Starting thread(s)...
+**
+**
+Auto-detecting all available GPUs... Detected 1 GPU(s), using 1 of them starting at GPU 0.
+----------------------------------------opWrapper.started()
+**
+**
+---->poseParameters:: POSE_PROTOTXT.at((int)poseModel): pose/mpi/pose_deploy_linevec.prototxt
+----------------------------------------cv imread image path
+**
+**
+---->wPoseExtractor:: tDatums is not Null or Empty
+------>wPoseExtractor:: going to forwardPass to spPoseExtractor
+
+
+*****************************************************************************************************
+*****************************************************************************************************
+poseExtractorCaffe:: forwardPass(inputNetData, inputDataSize, scaleInputToNetInputs, poseNetOutput)
+              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spNets = 1
+---->poseExtractorCaffe:: mNetInput4DSizes.size() = 0
+---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = 1 1 1 1 (1)
+---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = 4
+---->poseExtractorCaffe:: spHeatMapsBlob count() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob num() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob channels() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob height() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob width() = 1
+              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~
+              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spNets = 1
+---->poseExtractorCaffe:: mNetInput4DSizes.size() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = 1 1 1 1 (1)
+---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = 4
+---->poseExtractorCaffe:: spHeatMapsBlob count() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob num() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob channels() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob height() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob width() = 1
+              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~
+------>poseExtractorCaffe:: reshape blobs if required where i = 0
+---->poseExtractorCaffe:: spHeatMapsBlob = 44
+---------------------->poseExtractorCaffe forwardPass done 1
+              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spNets = 1
+---->poseExtractorCaffe:: mNetInput4DSizes.size() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = 1 44 368 496 (8031232)
+---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = 4
+---->poseExtractorCaffe:: spHeatMapsBlob count() = 8031232
+---->poseExtractorCaffe:: spHeatMapsBlob num() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob channels() = 44
+---->poseExtractorCaffe:: spHeatMapsBlob height() = 368
+---->poseExtractorCaffe:: spHeatMapsBlob width() = 496
+              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~
+---------------------->poseExtractorCaffe forwardPass done 2
+*****************************************************************************************************
+*****************************************************************************************************
+
+
+----------------------------------------opWrapper emplaced and popped
+**
+**
+----------------------------------------displayHeatMaps(datumProcessed, desiredChannel)
+**
+**
+OpenPose demo successfully finished. Total time: 4.105314 seconds.
+
+
+
+
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+----------------------------------------Starting OpenPose demo...
+**
+**
+----------------------------------------Configuring OpenPose...
+**
+**
+flagsToOpenPose:: flagsToPoseModel:: poseModeString == MPI
+----------------------------------------Starting thread(s)...
+**
+**
+Auto-detecting all available GPUs... Detected 1 GPU(s), using 1 of them starting at GPU 0.
+----------------------------------------opWrapper.started()
+**
+**
+---->poseParameters:: POSE_PROTOTXT.at((int)poseModel): pose/mpi/pose_deploy_linevec.prototxt
+----------------------------------------cv imread image path
+**
+**
+---->wPoseExtractor:: tDatums is not Null or Empty
+------>wPoseExtractor:: going to forwardPass to spPoseExtractor
+
+
+*****************************************************************************************************
+*****************************************************************************************************
+poseExtractorCaffe:: forwardPass(inputNetData, inputDataSize, scaleInputToNetInputs, poseNetOutput)
+              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spNets = 1
+---->poseExtractorCaffe:: mNetInput4DSizes.size() = 0
+---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = 1 1 1 1 (1)
+---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = 4
+---->poseExtractorCaffe:: spHeatMapsBlob count() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob num() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob channels() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob height() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob width() = 1
+              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~
+              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spNets = 1
+---->poseExtractorCaffe:: mNetInput4DSizes.size() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = 1 1 1 1 (1)
+---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = 4
+---->poseExtractorCaffe:: spHeatMapsBlob count() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob num() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob channels() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob height() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob width() = 1
+              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~
+------>poseExtractorCaffe:: reshape blobs if required where i = 0
+              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spNets = 1
+---->poseExtractorCaffe:: mNetInput4DSizes.size() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = 1 44 368 496 (8031232)
+---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = 4
+---->poseExtractorCaffe:: spHeatMapsBlob count() = 8031232
+---->poseExtractorCaffe:: spHeatMapsBlob num() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob channels() = 44
+---->poseExtractorCaffe:: spHeatMapsBlob height() = 368
+---->poseExtractorCaffe:: spHeatMapsBlob width() = 496
+              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spHeatMapsBlob = 44
+---------------------->poseExtractorCaffe forwardPass done 1
+              ~~~~~~~~~~~~~print parameters~~~~~~~~~~~~~
+---->poseExtractorCaffe:: spNets = 1
+---->poseExtractorCaffe:: mNetInput4DSizes.size() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob shape_string() = 1 44 368 496 (8031232)
+---->poseExtractorCaffe:: spHeatMapsBlob num_axes() = 4
+---->poseExtractorCaffe:: spHeatMapsBlob count() = 8031232
+---->poseExtractorCaffe:: spHeatMapsBlob num() = 1
+---->poseExtractorCaffe:: spHeatMapsBlob channels() = 44
+---->poseExtractorCaffe:: spHeatMapsBlob height() = 368
+---->poseExtractorCaffe:: spHeatMapsBlob width() = 496
+              ~~~~~~~~~~~~~~`~`~`~`~`~`~`~`~~~~~~~~~~~~~
+---------------------->poseExtractorCaffe forwardPass done 2
+*****************************************************************************************************
+*****************************************************************************************************
+
+
+----------------------------------------opWrapper emplaced and popped
+**
+**
+----------------------------------------displayHeatMaps(datumProcessed, desiredChannel)
+**
+**
+OpenPose demo successfully finished. Total time: 4.509442 seconds.
+
+
+
+
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+_____________________________________________________________________________________________________
+----------------------------------------Starting OpenPose demo...
+**
+**
+----------------------------------------Configuring OpenPose...
+**
+**
+flagsToOpenPose:: flagsToPoseModel:: poseModeString == MPI
+----------------------------------------Starting thread(s)...
+**
+**
+Auto-detecting all available GPUs... Detected 1 GPU(s), using 1 of them starting at GPU 0.

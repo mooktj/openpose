@@ -8,6 +8,16 @@
 #include <openpose/headers.hpp>
 #include <string>
 
+
+#include <ncurses.h>
+#include <python2.7/Python.h>
+
+#include <openpose/OpVNectPostFunctions.cpp>
+
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
 // Custom OpenPose flags
 // Producer
 // DEFINE_string(image_path, "examples/media/COCO_val2014_000000000192.jpg",
@@ -40,7 +50,7 @@ void display(const std::shared_ptr<std::vector<std::shared_ptr<op::Datum>>>& dat
             // }
             // Display image
             cv::imshow(OPEN_POSE_NAME_AND_VERSION + " - Tutorial C++ API", datumsPtr->at(0)->cvOutputData);
-            cv::waitKey(0);
+            // cv::waitKey(0);
         }
         else
             op::log("Nullptr or empty datumsPtr found.", op::Priority::High);
@@ -194,152 +204,12 @@ void configureWrapper(op::Wrapper& opWrapper)
     }
 }
 
-void write3dJointsVNect(const std::shared_ptr<std::vector<std::shared_ptr<op::Datum>>>& datumsPtr)
-{
-    try
-    {
-        if (datumsPtr != nullptr && !datumsPtr->empty())
-        {
-            ////////////---- GET JOINTS 3D ROOT RELATIVE ----////////////
-            auto& joints3d = datumsPtr->at(0)->joints_3d_root_relative;
-            std::cout << "joints3d size: " << joints3d.size() << "\n";
-            // std::cout << "joints3d (int)size: " << (int)joints3d.size() << "\n";
-            // for(int i = 0; i < joints3d.size(); i++)
-            // {
-            //     std::cout << "i: " << i << "\n";
-            //     for(int j = 0; j < joints3d.at(i).size(); j++)
-            //     {
-            //         // std::cout << "j = " << j << ", size: " << joints3d.at(i).at(j).size() << "\n";
-            //         for(int k = 0; k < joints3d.at(i).at(j).size(); k++)
-            //         {
-            //             std::cout << joints3d.at(i).at(j).at(k) << " ";
-            //         } 
-            //         std::cout << "\n";
-            //     }
-            // }
-            /////////////////////////////////////////////////////////////
-
-            /////////---- GET NECK DIFFS ----////////////////////////////
-            auto& neckDiffs = datumsPtr->at(0)->neckDiffs;
-            std::cout << "neckDiffs size: " << neckDiffs.size() << "\n";
-            for(int i = 0; i < neckDiffs.size(); i++)
-            {
-                std::cout << i << ": " << neckDiffs.at(i) << "\n";
-            }
-
-            ////////---- GET CHEST DIFFS ----////////////////////////////
-            auto& chestDiffs = datumsPtr->at(0)->chestDiffs;
-            std::cout << "chestDiffs size: " << chestDiffs.size() << "\n";
-            for(int i = 0; i < chestDiffs.size(); i++)
-            {
-                std::cout << i << ": " << chestDiffs.at(i) << "\n";
-            }
-            ///////----- GET AVG DIFFS FROM NECK AND CHEST -----/////////
-            // float avgDiffs[joints3d.size()][joints3d.size()];
-            // std::cout << "avgDiffs size: " << sizeof(avgDiffs) << "\n";
-            // std::cout << "float size: " << sizeof(float) << "\n";
-            // int numPoses = joints3d.size();
-            // int numPoseRelations = (numPoses * (numPoses - 1))/2;
-            // int relationI = 0;
-
-            // for(int i = 0; i < numPoses; i++)
-            // {
-            //     for(int j = 0; j < numPoses; j++)
-            //     {
-            //         avgDiffs[i][j] = neckDiffs.at(relationI) - chestDiffs.at(relationI++);
-            //     }
-            // }
-
-            // std::cout << "under numPoseRelations\n";
-            // for(int i = 0; i < numPoseRelations; i++)
-            // {
-            //     std::cout << "i: " << i << "\n";
-            // }
-
-            std::vector<float> avgDiffs;
-
-            for(int i = 0; i < neckDiffs.size(); i++)
-            {
-                avgDiffs.push_back((neckDiffs.at(i)+chestDiffs.at(i)) / 2);
-            }
-
-            std::cout << "printing avgDiffs\n";
-            for(int i = 0; i < avgDiffs.size(); i++)
-            {
-                std::cout << i << ". " << avgDiffs.at(i) << "\n";
-            }
-            /////////////////////////////////////////////////////////////
-
-            /////////---- GET FLOOR LEVELS ----//////////////////////////
-            auto& floorLevels = datumsPtr->at(0)->floorLevels;
-            std::cout << "floorLevels\n";
-            for(int i = 0; i < floorLevels.size(); i++)
-            {
-                std::cout << i << ". " << floorLevels.at(i) << "\n";
-            }
-
-            /////////////////////////////////////////////////////////////
-
-
-
-                /*---- PRINT VNECT_3D_JOINTS.TXT ----*/
-        // "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/3d_joints/"
-        std::string pathToWrite = "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/OP_VNECT/outputs-3-5-19/";
-        std::string fileName = "joints_3d";
-        std::string saveToName = pathToWrite + fileName + ".txt";
-        std::ofstream out3djoints(saveToName);
-        std::streambuf *coutbuf3djoints = std::cout.rdbuf();
-        std::cout.rdbuf(out3djoints.rdbuf());
-
-        // std::cout << "joints3d size: " << joints3d.size() << "\n";
-        // std::cout << "joints3d.at(0) size: " << joints3d.at(0).size() << "\n";
-        // std::cout << "joints3d.at(0).at(0) size: " << joints3d.at(0).at(0).size() << "\n";
-
-        for(int i = 0; i < joints3d.size(); i++)
-        {
-            for(int j = 0; j < joints3d.at(i).size(); j++)
-            {   
-                std::cout << "pose_" << i << " ";
-                for(int k = 0; k < joints3d.at(i).at(j).size(); k++)
-                {
-                    std::cout << joints3d.at(i).at(j).at(k) << " ";
-                }
-                std::cout << "\n";
-            }
-            std::cout << "\n";
-        }
-
-        std::cout << "POSE_END\n\n";
-
-        for(auto x : avgDiffs)
-        {
-            std::cout << "avgDiffs " << x << "\n";
-        }
-
-        std::cout << "AVGDIFFS_END\n\n";
-
-        for(auto y : floorLevels)
-        {
-            std::cout << "floorLevels " << y << "\n";
-        }
-
-        std::cout << "FLOORLEVELS_END\n\n";
-
-        std::cout.rdbuf(coutbuf3djoints);
-
-        }
-    }
-    catch (const std::exception& e)
-    {
-        std::cout << "ERROR WRITING VNECT\n";
-        op::error(e.what(), __LINE__, __FUNCTION__, __FILE__);
-    }
-}
-
 int tutorialApiCpp()
 {
     try
     {
+
+        std::cout << "OpenCV version: " << CV_VERSION << std::endl;
         // op::log("Starting OpenPose demo...", op::Priority::High);
         const auto opTimer = op::getTimerInit();
 
@@ -356,20 +226,106 @@ int tutorialApiCpp()
         // op::log("Starting thread(s)...", op::Priority::High);
         opWrapper.start();
 
-        // Process and display image
-        const auto imageToProcess = cv::imread(FLAGS_image_path);
-        auto datumProcessed = opWrapper.emplaceAndPop(imageToProcess);
-        if (datumProcessed != nullptr)
-        {
-            // printKeypoints(datumProcessed);
-            write3dJointsVNect(datumProcessed);
+        std::vector<std::string> images;
 
-            if (!FLAGS_no_display)
-                display(datumProcessed);
+        // images.push_back("/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/examples/media/multi-person/media_1.png");
+        images.push_back("/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/examples/media/multi-person/media_2.png");
 
-        }
-        else
-            op::log("Image could not be processed.", op::Priority::High);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        ///////// WRITING VIDEO /////////////////////////////////////////////////////////////////////////
+        // cv::VideoCapture cap("/home/mooktj/Desktop/myworkspace/Gogobebe_dance_cover.mp4");
+        // if(!cap.isOpened())
+        // {
+        //     std::cout << "ERROR OPENING VIDEO STREAM/FILE!\n";
+        //     exit(1);
+        // }
+
+        // // const std::string NAME = "Gogobebe_dance_cover.avi";
+        // // // int ex = static_cast<int>(cap.get(CV_CAP_PROP_FOURCC)); 
+
+        // // int frame_width = (int) cap.get(CV_CAP_PROP_FRAME_WIDTH);
+        // // int frame_height = (int) cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+        // // cv::Size frame_size(frame_width, frame_height);
+        // // int frames_per_sec = 10;
+
+        // // // cv::VideoWriter outputVideo(NAME, cv::VideoWriter::CV_FOURCC('P','I','M','1'), cap.get(CV_CAP_PROP_FPS), frame_size, true);
+
+        // // cv::Size S = cv::Size((int) cap.get(CV_CAP_PROP_FRAME_WIDTH),    // Acquire input size
+        // //           (int) cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+
+        // // cv::VideoWriter outputVideo;
+        // // // outputVideo.set(CV_CAP_PROP_FOURCC, CV_FOURCC('P','I','M','1'));
+        // // outputVideo.open(NAME, CV_FOURCC('M','J','P','G'), cap.get(CV_CAP_PROP_FPS), S, true);
+        // // if(!outputVideo.isOpened())
+        // // {
+        // //     std::cout << "ERROR CREATING/OPENING OUTPUTVIDEO TO WRITE!\n";
+        // //     exit(1);
+        // // }
+
+        // int i = 0;
+        // while(true)
+        // {
+        //     std::cout << "processing\n";
+        //     cv::Mat frame;
+        //     cap >> frame;
+        //     if(frame.empty())
+        //     {
+        //         std::cout << "Video has finished.\n";
+        //         break;
+        //     }
+
+        //     if((char)cv::waitKey(25) == 27)
+        //     {
+        //         std::cout << "Exit Video.\n";
+        //         break;
+        //     }
+
+        //     // const auto imageToProcess = cv::imread(frame);
+        //     auto datumProcessed = opWrapper.emplaceAndPop(frame);
+
+        //     if (datumProcessed != nullptr)
+        //     {
+        //         // printKeypoints(datumProcessed);
+        //         write3dJointsVNect(datumProcessed, i++);
+        //         // matplotlibVNect();
+
+        //         // if (!FLAGS_no_display)
+        //             // display(datumProcessed);
+        //             // outputVideo << datumProcessed->at(0)->cvOutputData;
+        //             // cv::waitKey(300);
+        //     }
+        //     else
+        //         op::log("Image could not be processed.", op::Priority::High);    
+
+        // }
+
+        // cap.release();
+        // outputVideo.release();
+        // cv::destroyAllWindows();
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // for(int i = 0; i < 2; i++)
+        // {
+            // Process and display image
+            const auto imageToProcess = cv::imread(images.at(0));
+            auto datumProcessed = opWrapper.emplaceAndPop(imageToProcess);
+            if (datumProcessed != nullptr)
+            {
+                std::cout << "datumProcessed i = " << 0 << "\n";
+                // printKeypoints(datumProcessed);
+                write3dJointsVNect(datumProcessed, 0);
+                // matplotlibVNect();
+
+                if (!FLAGS_no_display)
+                    display(datumProcessed);
+                    // cv::waitKey(3000);
+            }
+            else
+                op::log("Image could not be processed.", op::Priority::High);            
+        // }
+
+        cv::waitKey(0);
 
         // Measuring total time
         op::printTime(opTimer, "OpenPose demo successfully finished. Total time: ", " seconds.", op::Priority::High);

@@ -19,11 +19,22 @@ namespace op
    	float vNectFindMax(std::vector<float> in)
     {
         float max = 0;
-        for(unsigned int i = 0; i < in.size(); i++)
+        for(auto i = 0; i < in.size(); i++)
         {
             if(max < in.at(i)) max = in.at(i);
         }
         return max;
+    }
+
+    int getMaxIndex(std::vector<float> in, float max_value)
+    {
+        // float max = 0;
+        auto i = 0;
+        for(i = 0; i < in.size(); i++)
+        {
+            if(max_value = in.at(i)) break;
+        }
+        return (int) i;
     }
 
     float vNectFindMin(std::vector<float> in)
@@ -38,7 +49,7 @@ namespace op
 
     void vNectPostForward(const std::shared_ptr<op::Datum>& datumsPtr)
     {
-        std::cout << "________vNectPostForward________\n";
+        // std::cout << "________vNectPostForward________\n";
     	auto& poseKeypoints = datumsPtr->poseKeypoints;
     	std::vector<float> poseDistances;
 
@@ -100,6 +111,9 @@ namespace op
             float x_rhip = poseKeypoints[{i,8,0}];
             float y_rhip = poseKeypoints[{i,8,1}];
 
+            std::cout << "--* x_rhip: " << x_rhip << "\n";
+            std::cout << "--* y_rhip: " << y_rhip << "\n";
+
             float dia_lmid = pow(pow((x_chest - x_lhip),2) + pow((y_chest - y_lhip),2), 0.5); // diameter of chest/lhip
             if(x_chest == 0 || x_lhip == 0 || y_chest == 0 || y_lhip == 0)
             {
@@ -151,9 +165,14 @@ namespace op
             ////////////////////////////----BOT----////////////////////////////////////////////////////////////////            
             float x_lankle = poseKeypoints[{i,13,0}];
             float y_lankle = poseKeypoints[{i,13,1}];
+            std::cout << "..^ x_lankle: " << x_lankle << "\n";
+            std::cout << ".. y_lankle: " << y_lankle << "\n";
 
             float x_rankle = poseKeypoints[{i,10,0}];
             float y_rankle = poseKeypoints[{i,10,1}];
+
+            std::cout << "..^ x_rankle: " << x_rankle << "\n";
+            std::cout << ".. y_rankle: " << y_rankle << "\n";
 
             float x_lknee = poseKeypoints[{i,12,0}];
             float y_lknee = poseKeypoints[{i,12,1}];
@@ -188,6 +207,9 @@ namespace op
             // choosing larger radius for RIGHT BOT
             float rad_rbot = l_rhip > l_rankle ? l_rhip : l_rankle;
             // currRad.push_back(rad_rbot);
+            std::cout << "      --l_rhip: " << l_rhip << "\n";
+            std::cout << "l_rankle: " << l_rankle << "\n";
+            std::cout << "rad_rbot: " << rad_rbot << "\n";
 
             cv::Point cen_rbot = {(int)x_rknee, (int)y_rknee};
             // currCen.push_back(cen_rbot);
@@ -205,6 +227,10 @@ namespace op
             float dia_leg = 2 * rad_bot;
             // float top_of_leg = bot_of_mid;
             // float bot_of_leg = top_of_leg + dia_leg;
+
+            std::cout << "      --rad_lbot: " << rad_lbot << "\n";
+            std::cout << "rad_rbot: " << rad_rbot << "\n";
+            std::cout << "rad_bot: " << rad_bot << "\n";
 
             ////////////////////*TO-DO: CONSIDER AVERAGE FLOOR LEVEL OF TWO ANKLES IF WITHIN 5% BOUND///////////////////////////
             // float higher_ankle_height = y_lankle < y_rankle ? y_lankle : y_rankle;
@@ -226,36 +252,41 @@ namespace op
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
-            std::cout << "(int)(cen_lmid.x + cen_rmid.x)/2 : " << (int)(cen_lmid.x + cen_rmid.x)/2 << "\n";
+            // std::cout << "(int)(cen_lmid.x + cen_rmid.x)/2 : " << (int)(cen_lmid.x + cen_rmid.x)/2 << "\n";
             //------------GET TOP and BOT OF LEG-------------//
-            std::cout << "---->GET TOP BOT LEG\n";
+            std::cout << "  ---->GET TOP BOT LEG\n";
             float lower_ankle_height = y_lankle > y_rankle ? y_lankle : y_rankle;
-            int x_leg = (int) (y_lankle > y_rankle ? x_lankle : x_rankle);
+            // int x_leg = (int) (y_lankle > y_rankle ? x_lankle : x_rankle);
+
+            // std::cout << "~~y_lankle: " << y_lankle << "\n";
+            // std::cout << "y_rankle: " << y_rankle << "\n";
+            // std::cout << "lower_ankle_height: " << lower_ankle_height << "\n";
 
             float bot_of_leg = lower_ankle_height;
             float top_of_leg = bot_of_leg - dia_leg;
 
             std::cout << "bot_of_leg: " << bot_of_leg << "\n";
             std::cout << "top_of_leg: " << top_of_leg << "\n";
+            std::cout << "dia_leg: " << dia_leg << "\n";
 
-            if(i == 1)
+            // if(i == 1)
 
             //------------GET TOP and BOT OF MID-------------//
-            std::cout << "---->GET TOP BOT MID\n";
+            // std::cout << "---->GET TOP BOT MID\n";
             float bot_of_mid = top_of_leg;
             float top_of_mid = bot_of_mid - dia_mid;
 
-            std::cout << "bot_of_mid: " << bot_of_mid << "\n";
-            std::cout << "top_of_mid: " << top_of_mid << "\n";
+            // std::cout << "bot_of_mid: " << bot_of_mid << "\n";
+            // std::cout << "top_of_mid: " << top_of_mid << "\n";
             
 
             //------------GET TOP and BOT OF HEAD-------------//
-            std::cout << "---->GET TOP BOT HEAD\n";
+            // std::cout << "---->GET TOP BOT HEAD\n";
             float bot_of_head = top_of_mid;
             float top_of_head = bot_of_head - (2 * rad_top);
 
-            std::cout << "bot_of_head: " << bot_of_head << "\n";
-            std::cout << "top_of_head: " << top_of_head << "\n";
+            // std::cout << "bot_of_head: " << bot_of_head << "\n";
+            // std::cout << "top_of_head: " << top_of_head << "\n";
 
             // if(i == 1)
             // {
@@ -335,11 +366,24 @@ namespace op
             joints_2d_orig.push_back(joints);
         }
 
-        std::cout << "----------reading snowmen----------\n";
+        // std::cout << ".....printing out joints_2d_orig\n";
+        // for(auto i = 0; i < joints_2d_orig.size(); i++)
+        // {
+        //     std::cout << "i: " << i << " size of this: " << joints_2d_orig.at(i).size() << "\n";
+        //     for(auto j = 0; j < joints_2d_orig.at(i).size(); j++)
+        //     {
+        //         for(auto k = 0; k < joints_2d_orig.at(i).at(j).size(); k++)
+        //         {
+        //             std::cout << "j: " << j << ",k: " << k << " joint: " << joints_2d_orig.at(i).at(j).at(k) << "\n";
+        //         }
+        //     }
+        // }
+
+        // std::cout << "----------reading snowmen----------\n";
         for(auto sm = 0; sm < snowmen.size(); sm++)
         {
-            std::cout << " <0o0E snowman: " << sm << "\n";
-            std::cout << " cen_x: " << snowmen.at(sm).at(0) << "\n";
+            // std::cout << " <0o0E snowman: " << sm << "\n";
+            // std::cout << " cen_x: " << snowmen.at(sm).at(0) << "\n";
 
             int cen_x = snowmen.at(sm).at(0);
             float top_of_head = snowmen.at(sm).at(1);
@@ -397,7 +441,7 @@ namespace op
             // Sort snowman from floor level
             if(bot_of_leg > lowest_snowman)
             {
-                std::cout << "--------------FIND A PLACE TO INSERT CURRENT SNOWMAN-----------------\n";
+                // std::cout << "--------------FIND A PLACE TO INSERT CURRENT SNOWMAN-----------------\n";
                 // if(snowmen_sorted.empty())
                 // {
                 //     std::cout << "--FIRST TIME IN sm = 0--\n";
@@ -415,17 +459,17 @@ namespace op
             }
             else 
             {
-                std::cout << "--------------ELSE FIND A PLACE TO INSERT CURRENT SNOWMAN-----------------\n";
+                // std::cout << "--------------ELSE FIND A PLACE TO INSERT CURRENT SNOWMAN-----------------\n";
                 int s = 0;
                 while(true)
                 {
-                    std::cout << "s: " << s << "\n";
+                    // std::cout << "s: " << s << "\n";
                     if(s >= snowmen_sorted.size()) break;
                     if(bot_of_leg > snowmen_sorted.at(s).at(6)) break;
                     s++;
                 }
 
-                std::cout << "s out: " << s << "\n";
+                // std::cout << "s out: " << s << "\n";
                 snowmen_sorted.insert(snowmen_sorted.begin() + s, snowman_temp);
                 joints_3d.insert(joints_3d.begin() + s, datumsPtr_joints_3d.at(sm));
                 joints_2d.insert(joints_2d.begin() + s, joints_2d_orig.at(sm));
@@ -444,10 +488,12 @@ namespace op
 
         // float poses_relations[snowmen.size()][snowmen.size()];
         std::vector<float> poses_relations; // store relative depths, may extend to storing relatiive heights
-        std::cout << "................CHEKCING snowmen_sorted................\n";
+
+        // std::cout << "snowmen_sorted size: " << snowmen_sorted.size() << "\n";
+        // std::cout << "................CHECKING snowmen_sorted................\n";
         for(auto s = 0; s < snowmen_sorted.size() - 1; s++)
         {
-            std::cout << "=======^OoO))s snowman: " << s << "\n";
+            // std::cout << "=======^OoO))s snowman: " << s << "\n";
             
             // int cen_x = snowmen_sorted.at(s).at(0);
             // float top_of_head = snowmen_sorted.at(s).at(1);
@@ -459,7 +505,7 @@ namespace op
             float x_left_bot_a = snowmen_sorted.at(s).at(7);
             float y_left_bot_a = snowmen_sorted.at(s).at(8);
 
-            std::cout << "cen_x: " << snowmen_sorted.at(s).at(0) << "\n";
+            // std::cout << "cen_x: " << snowmen_sorted.at(s).at(0) << "\n";
             // std::cout << "top_of_head: " << top_of_head << "\n";
             // std::cout << "bot_of_head: " << bot_of_head << "\n";
             // std::cout << "top_of_mid: " << top_of_mid << "\n";
@@ -467,26 +513,26 @@ namespace op
             // std::cout << "top_of_leg: " << top_of_leg << "\n";
             // std::cout << "bot_of_leg: " << bot_of_leg << "\n";
 
-            std::cout << "left_bot: (" << snowmen_sorted.at(s).at(7) << "," << snowmen_sorted.at(s).at(8) << ")\n";
+            // std::cout << "left_bot: (" << snowmen_sorted.at(s).at(7) << "," << snowmen_sorted.at(s).at(8) << ")\n";
 
 
             // FIND LENGTH FROM VANISHING POINT TO LEFT_BOT
             cv::Point image_center((int) currPose_output.cols/2, (int) currPose_output.rows/2);
             float length_a = pow(pow((image_center.x - x_left_bot_a),2) + pow((image_center.y - y_left_bot_a),2), 0.5);
-            std::cout << "image_center: " << image_center << "\n";
-            std::cout << "length_a: " << length_a << "\n"; 
-            std::cout << "=====================\n";
+            // std::cout << "image_center: " << image_center << "\n";
+            // std::cout << "length_a: " << length_a << "\n"; 
+            // std::cout << "=====================\n";
 
             // cv::circle(currPose_output, image_center, 5, cv::Scalar(255,255,0), -1 ,8);
             // cv::circle(currPose_output, cv::Point((int) x_left_bot_a, (int) y_left_bot_a), 5, cv::Scalar(0,255,0), -1 ,8);
 
 
             // snowman s+1
-            std::cout << "=======^OoO))s snowman+1: " << s+1 << "\n";
+            // std::cout << "=======^OoO))s snowman+1: " << s+1 << "\n";
             float x_left_bot_b = snowmen_sorted.at(s+1).at(7);
             float y_left_bot_b = snowmen_sorted.at(s+1).at(8);
 
-            std::cout << "cen_x: " << snowmen_sorted.at(s+1).at(0) << "\n";
+            // std::cout << "cen_x: " << snowmen_sorted.at(s+1).at(0) << "\n";
             // std::cout << "top_of_head: " << top_of_head << "\n";
             // std::cout << "bot_of_head: " << bot_of_head << "\n";
             // std::cout << "top_of_mid: " << top_of_mid << "\n";
@@ -494,14 +540,14 @@ namespace op
             // std::cout << "top_of_leg: " << top_of_leg << "\n";
             // std::cout << "bot_of_leg: " << bot_of_leg << "\n";
 
-            std::cout << "left_bot: (" << snowmen_sorted.at(s+1).at(7) << "," << snowmen_sorted.at(s+1).at(8) << ")\n";
+            // std::cout << "left_bot: (" << snowmen_sorted.at(s+1).at(7) << "," << snowmen_sorted.at(s+1).at(8) << ")\n";
 
 
             // FIND LENGTH FROM VANISHING POINT TO LEFT_BOT
             float length_b = pow(pow((image_center.x - x_left_bot_b),2) + pow((image_center.y - y_left_bot_b),2), 0.5);
-            std::cout << "image_center: " << image_center << "\n";
-            std::cout << "length_b: " << length_b << "\n"; 
-            std::cout << "=====================\n";
+            // std::cout << "image_center: " << image_center << "\n";
+            // std::cout << "length_b: " << length_b << "\n"; 
+            // std::cout << "=====================\n";
 
             cv::circle(currPose_output, image_center, 5, cv::Scalar(255,255,0), -1 ,8);
             cv::circle(currPose_output, cv::Point((int) x_left_bot_b, (int) y_left_bot_b), 5, cv::Scalar(0,255,0), -1 ,8);
@@ -513,12 +559,12 @@ namespace op
             float y = y_left_bot_b; // y of src
             float x = (((y-y0)*(x1-x0))/(y1-y0)) + x0;
 
-            std::cout << "=========================\n=========================\n";
-            std::cout << "x0: " << x0 << ", y0: " << y0 << "\n";
-            std::cout << "x1: " << x1 << ", y1: " << y1 << "\n";
-            std::cout << "y: " << y << "\n"; 
+            // std::cout << "=========================\n=========================\n";
+            // std::cout << "x0: " << x0 << ", y0: " << y0 << "\n";
+            // std::cout << "x1: " << x1 << ", y1: " << y1 << "\n";
+            // std::cout << "y: " << y << "\n"; 
 
-            std::cout << "--> interpolated x = " << x << "(int=" << (int)x << ")\n";
+            // std::cout << "--> interpolated x = " << x << "(int=" << (int)x << ")\n";
                     
             cv::Point start_interpolate((int) x_left_bot_b, (int) y_left_bot_b);
             cv::Point end_interpolate((int) x, (int) y_left_bot_b);
@@ -535,12 +581,181 @@ namespace op
             float norm_scale = 5;
             float norm_length = abs(length_a - length_x) * norm_factor * norm_scale;
             float exp = 2.71828;
-            float infer_depth = pow((10*exp),-(6 - norm_length));
-            std::cout << "5 - norm_length: " << 6 - norm_length << "\n";
-            std::cout << "norm_length: " << norm_length << "\n";
-            std::cout << "infer_depth: " << infer_depth*10000000 << "\n";
+            float infer_depth = pow((10*exp),-(5 - norm_length));
+            // std::cout << "5 - norm_length: " << 5 - norm_length << "\n";
+            // std::cout << "norm_length: " << norm_length << "\n";
+            // std::cout << "infer_depth: " << infer_depth*10000000 << "\n";
             datumsPtr->floorLevels.push_back(infer_depth);
+        }
 
+        std::cout << "snowmen_sorted size(): " << snowmen_sorted.size() << "\n";
+        std::vector<std::vector<float>> prevSnowmen = datumsPtr->prevSnowmen;
+
+        std::vector<float> score_stage1;
+        // datumsPtr->snowmen.clear();
+        std::cout << "......................GOING INTO PAIRING SNOWMEN-------------------------\n";
+        for(auto i = 0; i < snowmen_sorted.size(); i++)
+        {
+            std::cout << "i: " << i << "\n";
+            // std::cout << "==> x chest: " << joints_2d.at(i).at(14).at(0) << "\n";
+            // std::cout << "==> y chest: " << joints_2d.at(i).at(14).at(1) << "\n";
+            datumsPtr->snowmen.push_back(snowmen_sorted.at(i));
+            datumsPtr->orientation.push_back(joints_2d.at(i).at(14).at(0)); // x chest
+            datumsPtr->orientation.push_back(joints_2d.at(i).at(14).at(1)); // y chest
+
+            // std::cout << "snowmen_sorted i size: " << snowmen_sorted.at(i).size() << "\n";
+
+            float cen_x = snowmen_sorted.at(i).at(0);
+            float top_of_head = snowmen_sorted.at(i).at(1);
+            float bot_of_head = snowmen_sorted.at(i).at(2);
+            float top_of_mid = snowmen_sorted.at(i).at(3);
+            float bot_of_mid = snowmen_sorted.at(i).at(4);
+            float top_of_leg = snowmen_sorted.at(i).at(5);
+            float bot_of_leg = snowmen_sorted.at(i).at(6);
+            // float x_left_bot_a = snowmen_sorted.at(s).at(7);
+            // float y_left_bot_a = snowmen_sorted.at(s).at(8);
+
+            float rad_top =  bot_of_head - (top_of_head + bot_of_head) / 2;
+            float rad_mid =  bot_of_mid - (top_of_mid + bot_of_mid) / 2;
+            float rad_bot = bot_of_leg - (top_of_leg + bot_of_leg) / 2;
+
+            // std::cout << "\tcen_x: " << cen_x << "\n";
+            // std::cout << "\ttop radius: " << rad_top << "\n";
+            // std::cout << "\tmid radius: " << rad_mid << "\n";
+            // std::cout << "\tbot radius: " << rad_bot << "\n";
+
+            // COMPARE WITH ALL PREV SNOWMEN
+            for(auto p = 0; p < prevSnowmen.size(); p++)
+            {
+                float cen_x_p = prevSnowmen.at(p).at(0);
+                float top_of_head_p = prevSnowmen.at(p).at(1);
+                float bot_of_head_p = prevSnowmen.at(p).at(2);
+                float top_of_mid_p = prevSnowmen.at(p).at(3);
+                float bot_of_mid_p = prevSnowmen.at(p).at(4);
+                float top_of_leg_p = prevSnowmen.at(p).at(5);
+                float bot_of_leg_p = prevSnowmen.at(p).at(6);
+                // float x_left_bot_a_p = prevSnowmen.at(s).at(7);
+                // float y_left_bot_a_p = prevSnowmen.at(s).at(8);
+
+                float rad_top_p =  bot_of_head_p - (top_of_head_p + bot_of_head_p) / 2;
+                float rad_mid_p =  bot_of_mid_p - (top_of_mid_p + bot_of_mid_p) / 2;
+                float rad_bot_p = bot_of_leg_p - (top_of_leg_p + bot_of_leg_p) / 2;
+                std::cout << "...................COMPARING WITH ALL PREV SNOWMEN----\n";
+                std::cout << "  .p: " << p << ", size(): " << prevSnowmen.at(p).size() << "\n";
+                // std::cout << "      cen_x_p: " << cen_x_p << "\n";
+                // std::cout << "      top radius: " << rad_top_p << "\n";
+                // std::cout << "      mid radius: " << rad_mid_p << "\n";
+                // std::cout << "      bot radius: " << rad_bot_p << "\n";
+
+                // std::cout << "cen_x diff: " << cen_x - cen_x_p << "\n";
+                // std::cout << "top rad diff: " << rad_top - rad_top_p << "\n";
+                // std::cout << "mid rad diff: " << rad_mid - rad_mid_p << "\n";
+                // std::cout << "bot rad diff: " << rad_bot - rad_bot_p << "\n";
+
+                float diff_cen = cen_x - cen_x_p;
+                float diff_top = rad_top - rad_top_p;
+                float diff_mid = rad_mid - rad_mid_p;
+                float diff_bot = rad_bot - rad_bot_p;
+
+                if(diff_top == 0 && diff_mid == 0 && diff_bot == 0)
+                {
+                    std::cout << "----------------got exact same pose-----------------\n";
+                }
+
+                float score = (0.3 * diff_cen) + (0.3 * diff_mid) + (0.2 * diff_top) + (0.1 * diff_bot);
+                std::cout << "->score: " << score << "\n";
+                score_stage1.push_back(score == 0 ? 10 : abs(1/score)); // not considering direction
+
+            }
+
+        }
+
+        // for(auto sc = 0; sc < score_stage1.size(); sc++)
+        // {
+        std::cout << "||||||||||||||||||SCORE STAGE 1||||||||||||||||||\n";
+        std::vector<int> scstage1_indices;
+        auto score_index = 0;
+            for(auto c = 0; c < snowmen_sorted.size(); c++)
+            {
+                std::cout << "curr snowmen: " << c << "\n";
+
+                std::vector<float> score_stage1_temp;
+                for(auto p = 0; p < prevSnowmen.size(); p++)
+                {
+                    std::cout << "->sc: " << score_index << ", score: " << score_stage1.at(score_index) << "\n";
+                    score_stage1_temp.push_back(score_stage1.at(score_index));
+                    score_index++;
+                }
+                // std::cout << "-----------check 1---------\n";
+                float score_max_temp = vNectFindMax(score_stage1_temp);
+                // std::cout << "-----------check 2---------\n";
+                int score_max_index = getMaxIndex(score_stage1_temp, score_max_temp);
+                scstage1_indices.push_back(score_max_index);
+                // std::cout << "-----------check 3---------\n";
+            }
+        std::cout << "---------\n";
+        // std::cout << "---> prevSnowmen.at(scstage1_indices.at(i)): " << prevSnowmen.at(0).at(0) << "\n";  
+        
+        if(!prevSnowmen.empty())
+        {
+            for(auto i = 0; i < scstage1_indices.size(); i++)
+            {
+                std::cout << "i: " << i << ", " << scstage1_indices.at(i) << "\n";
+                std::cout << "  global index: " << (i * (prevSnowmen.size())) + scstage1_indices.at(i) << "\n";
+
+                // std::cout << "---> prevSnowmen.at(scstage1_indices.at(i)): " << prevSnowmen.at(0).at(0) << "\n";
+
+                int cen_x = prevSnowmen.at((int)scstage1_indices.at(i)).at(0);
+                // std::cout << "----->check 1\n";
+                float top_of_head = prevSnowmen.at(scstage1_indices.at(i)).at(1);
+                float bot_of_head = prevSnowmen.at(scstage1_indices.at(i)).at(2);
+                float top_of_mid = prevSnowmen.at(scstage1_indices.at(i)).at(3);
+                float bot_of_mid = prevSnowmen.at(scstage1_indices.at(i)).at(4);
+                float top_of_leg = prevSnowmen.at(scstage1_indices.at(i)).at(5);
+                float bot_of_leg = prevSnowmen.at(scstage1_indices.at(i)).at(6);
+                float x_left_bot_a = prevSnowmen.at(scstage1_indices.at(i)).at(7);
+                float y_left_bot_a = prevSnowmen.at(scstage1_indices.at(i)).at(8);
+
+                // std::cout << "----->check 2\n";
+                float rad_top =  bot_of_head - (top_of_head + bot_of_head) / 2;
+                float rad_mid =  bot_of_mid - (top_of_mid + bot_of_mid) / 2;
+                float rad_bot = bot_of_leg - (top_of_leg + bot_of_leg) / 2;
+                
+                // std::cout << "----->check 3\n";
+                // DRAW SNOWMAN ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                cv::circle(currPose, cv::Point(cen_x, (int) (top_of_head + bot_of_head)/2), rad_top, cv::Scalar(0,255,0), -1, 8);
+                cv::circle(currPose, cv::Point(cen_x, (int) (top_of_mid + bot_of_mid)/2), rad_mid, cv::Scalar(0,255,0), -1, 8);
+                cv::circle(currPose, cv::Point(cen_x, (int) (top_of_leg + bot_of_leg)/2), rad_bot, cv::Scalar(0,255,0), -1, 8);
+
+                // cv::circle(currPose, cv::Point(cen_x, (int)bot_of_leg), 5, cv::Scalar(0,255,255), -1, 8);
+                // cv::circle(currPose, cv::Point(cen_x, (int)top_of_leg), 5, cv::Scalar(0,255,255), -1, 8);
+                // cv::circle(currPose, cv::Point(cen_x, (int)bot_of_mid), 5, cv::Scalar(0,255,255), -1, 8);
+                // cv::circle(currPose, cv::Point(cen_x, (int)top_of_mid), 5, cv::Scalar(0,255,255), -1, 8);
+                // cv::circle(currPose, cv::Point(cen_x, (int)bot_of_head), 5, cv::Scalar(0,255,255), -1, 8);
+                // cv::circle(currPose, cv::Point(cen_x, (int)top_of_head), 5, cv::Scalar(0,255,255), -1, 8);
+
+                cv::addWeighted(currPose, opacity, currPose_output, 1 - opacity, 0, currPose_output); 
+                ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+            }
+        }
+
+        std::cout << "||||||||||||||||||||||||||||||||||||||||||||||||\n";
+        // }
+
+        // auto size_orient;
+        // if(datumsPtr->prevOrientation.size() > datumsPtr->orientation.size()) size_orient = datumsPtr->orientation.size();
+        // else if(datumsPtr->prevOrientation.size() <= datumsPtr->orientation.size()) size_orient = datumsPtr->prevOrientation.size();
+
+        for(auto c = 0; c < datumsPtr->orientation.size(); c++)
+        {
+            if(datumsPtr->orientation.at(c) == 0) std::cout << "orientation is zero!!\n";
+            for(auto p = 0; p < datumsPtr->prevOrientation.size(); p++)
+            {
+                // std::cout << "i: " << i << "prevOri: " << datumsPtr->prevOrientation.at(i) << "\n";
+                if(datumsPtr->prevOrientation.at(p) == 0) std::cout << "prevOrientation is zero!!\n";
+            }
 
         }
 
@@ -558,9 +773,9 @@ namespace op
 
             // float ankleRatio = lowestAnkle_1 > lowestAnkle_2 ? (lowestAnkle_1 - lowestAnkle_2) : (lowestAnkle_2 - lowestAnkle_1);
 
-            std::cout << "person pair: [" << person << "-" << person+1 << "]\n";
-            std::cout << "neckDiff: " << neckDiff << "\n";
-            std::cout << "chestDiff: " << chestDiff << "\n"; 
+            // std::cout << "person pair: [" << person << "-" << person+1 << "]\n";
+            // std::cout << "neckDiff: " << neckDiff << "\n";
+            // std::cout << "chestDiff: " << chestDiff << "\n"; 
 
             datumsPtr->neckDiffs.push_back(neckDiff);
             datumsPtr->chestDiffs.push_back(chestDiff);
@@ -712,7 +927,7 @@ namespace op
 		// // compare radius
 		// // depth depends on poses interdependency positions mainly, not where there are in the original image
 
-		cv::imshow("currPose_output", currPose_output);
+		// cv::imshow("currPose_output", currPose_output);
 
 
     }
@@ -1141,7 +1356,7 @@ namespace op
             // }
 	    }
 
-	    cv::imshow(std::to_string(rand() % 23), image_2d);
+	    // cv::imshow(std::to_string(rand() % 23), image_2d);
 
 		/*---- PRINT VNECT_3D_JOINTS.TXT ----*/
 		// // "/home/mooktj/Desktop/myworkspace/mook-openpose/openpose/outputs/3d_joints/"

@@ -28,13 +28,24 @@ namespace op
 
     int getMaxIndex(std::vector<float> in, float max_value)
     {
+        std::cout << "~~~~~~ :: getMaxIndex :: ~~~~~~\n";
         // float max = 0;
+        std::cout << "max_value: " << max_value << "\n";
+
+        bool FOUND = false;
         auto i = 0;
         for(i = 0; i < in.size(); i++)
         {
-            if(max_value = in.at(i)) break;
+            std::cout << "in.at(" << i << "): " << in.at(i) << "\n";
+            if(max_value == in.at(i)) 
+                {   
+                    FOUND = true;
+                    break;
+                }
         }
-        return (int) i;
+
+        std::cout << "getMaxIndex: " << i << "\n";
+        return FOUND ? (int) i : -1;
     }
 
     float vNectFindMin(std::vector<float> in)
@@ -63,7 +74,7 @@ namespace op
 
 		for(int i = 0; i < poseKeypoints.getSize(0); i++)
         {
-
+            std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~pose: " << i << "\n";
             // std::vector<float> currRad;
             // std::vector<cv::Point> currCen;
             std::vector<float> snowman;
@@ -79,8 +90,8 @@ namespace op
             float x_chest = poseKeypoints[{i,14,0}];
             float y_chest = poseKeypoints[{i,14,1}];
 
-            float l_head = pow(pow((x_head - x_neck),2) + pow((y_head - y_neck),2), 0.5);
-            float l_chest = pow(pow((x_chest - x_neck),2) + pow((y_chest - y_neck),2), 0.5);
+            float l_head = (x_neck == 0 || x_head == 0) || (y_neck == 0 || y_head == 0) ? 0 : pow(pow((x_head - x_neck),2) + pow((y_head - y_neck),2), 0.5);
+            float l_chest = (x_neck == 0 || x_chest == 0) || (y_neck == 0 || y_chest == 0) ? 0 : pow(pow((x_chest - x_neck),2) + pow((y_chest - y_neck),2), 0.5);
 
             // choose larger radius between head and chest
             float rad_top = l_head > l_chest ? l_head : l_chest;
@@ -91,6 +102,18 @@ namespace op
 
             // cv::circle(currPose, cen_top, rad_top, cv::Scalar(0,0,255), -1, 8);
             // cv::addWeighted(currPose, opacity, currPose_output, 1 - opacity, 0, currPose_output);
+
+            // USE PREV DETECTED JOINTS IF INSUFFICIENT JOINTS DETECTED
+            // if(x_neck == 0 && x_head == 0 && x_chest == 0) // GET PREV
+            if( ((x_neck == 0 && x_head == 0) || (x_neck == 0 && x_chest == 0) || (x_head == 0 && x_chest == 0)) ||
+                    ((y_neck == 0 && y_head == 0) || (y_neck == 0 && y_chest == 0) || (y_head == 0 && y_chest == 0)) )
+            {
+              // GET PREV
+                // SET RADIUS TO 0 TO NOTIFY BELOW TO CHECK FOR RETRIEVING UNMATCHED POSES
+                rad_top = 0;
+                cen_top = {0,0};
+            } 
+            // else if((y_neck == 0 && y_head == 0) || (y_neck == 0 && y_chest == 0) || (y_head == 0 && y_chest == 0)) // GET PREV
 
             //------------GET TOP and BOT OF HEAD-------------//
             // float top_of_head = y_neck - rad_top;
@@ -111,44 +134,64 @@ namespace op
             float x_rhip = poseKeypoints[{i,8,0}];
             float y_rhip = poseKeypoints[{i,8,1}];
 
-            std::cout << "--* x_rhip: " << x_rhip << "\n";
-            std::cout << "--* y_rhip: " << y_rhip << "\n";
+            // std::cout << "--* x_rhip: " << x_rhip << "\n";
+            // std::cout << "--* y_rhip: " << y_rhip << "\n";
 
-            float dia_lmid = pow(pow((x_chest - x_lhip),2) + pow((y_chest - y_lhip),2), 0.5); // diameter of chest/lhip
-            if(x_chest == 0 || x_lhip == 0 || y_chest == 0 || y_lhip == 0)
-            {
-                dia_lmid = 0;
-            }
+            float dia_lmid = (x_chest == 0 || x_lhip == 0) || (y_chest == 0 || y_lhip == 0) ? 0 : pow(pow((x_chest - x_lhip),2) + pow((y_chest - y_lhip),2), 0.5); // diameter of chest/lhip
             float rad_lmid = dia_lmid/2;
-            // currRad.push_back(rad_lmid);
-
             cv::Point cen_lmid = {(int)(x_chest + x_lhip)/2, (int)(y_chest + y_lhip)/2};
-            // currCen.push_back(cen_lmid);
 
-            // if(x_chest != 0 && y_chest != 0 && x_lhip != 0 && y_lhip != 0)
-            // {
-            //     cv::circle(currPose, cen_lmid, rad_lmid, cv::Scalar(255,0,0), -1, 8);
-            //     cv::addWeighted(currPose, opacity, currPose_output, 1 - opacity, 0, currPose_output); 
-            // }
+            if( (x_chest == 0 && x_lhip == 0) || (y_chest == 0 && y_lhip == 0) )
+            {
+                // SET 0 TO NOTIFY UNDETECTED JOINTS, REQUIRE PREV POSE WHEN POST-MATCHING
+                rad_lmid = 0;
+                dia_lmid = 0;
+                cen_lmid = {0,0};
+            }
 
-            float dia_rmid = pow(pow((x_chest - x_rhip),2) + pow((y_chest - y_rhip),2), 0.5); // diameter of chest/rhip
+            float dia_rmid = (x_chest == 0 || x_rhip == 0) || (y_chest == 0 || y_rhip == 0) ? 0: pow(pow((x_chest - x_rhip),2) + pow((y_chest - y_rhip),2), 0.5); // diameter of chest/rhip
             float rad_rmid = dia_rmid/2;
-            // currRad.push_back(rad_rmid);
-
             cv::Point cen_rmid = {(int)(x_chest + x_rhip)/2, (int)(y_chest + y_rhip)/2};
-            // currCen.push_back(cen_rmid);
-
-            // if(x_chest != 0 && y_chest != 0 && x_rhip != 0 && y_rhip != 0)
-            // {
-            //     cv::circle(currPose, cen_rmid, rad_rmid, cv::Scalar(255,0,0), -1, 8);
-            //     cv::addWeighted(currPose, opacity, currPose_output, 1 - opacity, 0, currPose_output); 
-            // }             
+            
+            if( (x_chest == 0 && x_rhip == 0) || (y_chest == 0 && y_rhip == 0))
+            {
+                rad_rmid = 0;
+                dia_rmid = 0;
+                cen_rmid = {0,0};
+            }
 
             float dia_mid;
-            if(dia_lmid == 0 && dia_rmid == 0) dia_mid = 0;
-            else if(dia_lmid == 0 && dia_rmid != 0) dia_mid = dia_rmid;
-            else if(dia_rmid == 0 && dia_lmid != 0) dia_mid = dia_lmid;
-            else dia_mid = dia_lmid > dia_rmid ? dia_lmid : dia_rmid;
+            int cen_x;
+            if(dia_lmid == 0 && dia_rmid == 0) 
+            {
+                // NOTIFY TO GET PREV POSE
+                dia_mid = 0;
+                cen_x = 0;
+            } 
+            else if(dia_lmid == 0 && dia_rmid != 0) 
+            {
+                // JUST USE THE ONE COMPLETED
+                dia_mid = dia_rmid; 
+                cen_x = cen_rmid.x;
+            }
+            else if(dia_rmid == 0 && dia_lmid != 0)
+            {
+                // JUST USE THE ONE COMPLETED
+                dia_mid = dia_lmid; 
+                cen_x = cen_lmid.x;
+            }
+            else 
+            {
+                dia_mid = dia_lmid > dia_rmid ? dia_lmid : dia_rmid;
+                cen_x = (int)(cen_lmid.x + cen_rmid.x)/2;
+            }
+
+            // if( (x_lhip == 0 && x_rhip == 0) || (y_lhip == 0 && y_rhip == 0) )
+            // {
+            //     // SET DIA_MID TO 0 TO NOTIFY BELOW TO CHECK TO RETRIEVE UNMATCHED POSES
+            //     dia_mid = 0;
+            //     cen_x = 0;
+            // }
 
             //------------GET TOP and BOT OF MID-------------//
             // float top_of_mid = bot_of_head;
@@ -165,14 +208,14 @@ namespace op
             ////////////////////////////----BOT----////////////////////////////////////////////////////////////////            
             float x_lankle = poseKeypoints[{i,13,0}];
             float y_lankle = poseKeypoints[{i,13,1}];
-            std::cout << "..^ x_lankle: " << x_lankle << "\n";
-            std::cout << ".. y_lankle: " << y_lankle << "\n";
+            // std::cout << "..^ x_lankle: " << x_lankle << "\n";
+            // std::cout << ".. y_lankle: " << y_lankle << "\n";
 
             float x_rankle = poseKeypoints[{i,10,0}];
             float y_rankle = poseKeypoints[{i,10,1}];
 
-            std::cout << "..^ x_rankle: " << x_rankle << "\n";
-            std::cout << ".. y_rankle: " << y_rankle << "\n";
+            // std::cout << "..^ x_rankle: " << x_rankle << "\n";
+            // std::cout << ".. y_rankle: " << y_rankle << "\n";
 
             float x_lknee = poseKeypoints[{i,12,0}];
             float y_lknee = poseKeypoints[{i,12,1}];
@@ -180,11 +223,11 @@ namespace op
             float x_rknee = poseKeypoints[{i,9,0}];
             float y_rknee = poseKeypoints[{i,9,1}];
 
-            float l_lhip = pow(pow((x_lhip - x_lknee),2) + pow((y_lhip - y_lknee),2), 0.5);
-            float l_lankle = pow(pow((x_lankle - x_lknee),2) + pow((y_lankle - y_lknee),2), 0.5);
+            float l_lhip = (x_lhip == 0 || x_lknee == 0) || (y_lhip == 0 || y_lknee == 0) ? 0 : pow(pow((x_lhip - x_lknee),2) + pow((y_lhip - y_lknee),2), 0.5);
+            float l_lankle = (x_lankle == 0 || x_lknee == 0) || (y_lankle == 0 || y_lknee == 0) ? 0 : pow(pow((x_lankle - x_lknee),2) + pow((y_lankle - y_lknee),2), 0.5);
 
-            float l_rhip = pow(pow((x_rhip - x_rknee),2) + pow((y_rhip - y_rknee),2), 0.5);
-            float l_rankle = pow(pow((x_rankle - x_rknee),2) + pow((y_rankle - y_rknee),2), 0.5);
+            float l_rhip = (x_rhip == 0 || x_rknee == 0) || (y_rhip == 0 || y_rknee == 0) ? 0 : pow(pow((x_rhip - x_rknee),2) + pow((y_rhip - y_rknee),2), 0.5);
+            float l_rankle = (x_rankle == 0 || x_rknee == 0) || (y_rankle == 0 || y_rknee == 0) ? 0 : pow(pow((x_rankle - x_rknee),2) + pow((y_rankle - y_rknee),2), 0.5);
 
             // choosing larger radius for LEFT BOT
             float rad_lbot = l_lhip > l_lankle ? l_lhip : l_lankle;
@@ -193,23 +236,21 @@ namespace op
             cv::Point cen_lbot = {(int)x_lknee, (int)y_lknee};
             // currCen.push_back(cen_lbot);
 
-            if(x_lknee != 0 && y_lknee != 0)
+            if( ((x_lknee == 0 && x_lankle == 0) || (x_lknee == 0 && x_lhip == 0) || (x_lankle == 0 && x_lhip == 0)) ||
+                   ((y_lknee == 0 && y_lankle == 0) || (y_lknee == 0 && y_lhip == 0) || (y_lankle == 0 && y_lhip == 0)) )
             {
-                // cv::circle(currPose, cen_lbot, rad_lbot, cv::Scalar(0,255,0), -1, 8);
-                    // cv::line(currPose, cv::Point(center.x - 25, center.y+radius), cv::Point(center.x + 25, center.y+radius), cv::Scalar(0,255,0), 1, 8, 0);
-                    // std::string text = "h: " + std::to_string(center.y + radius);
-                    // cv::Point textOrg = cv::Point(center.x + 27, center.y + radius - 5);
-                    // int fontFace = CV_FONT_HERSHEY_SIMPLEX;
-                    // cv::putText(currPose, text, textOrg, fontFace, 0.3, cv::Scalar(0,0,0), 1, 8);
-                // cv::addWeighted(currPose, opacity, currPose_output, 1 - opacity, 0, currPose_output);
+                // SET RAD_LBOT AND CEN_LBOT TO 0 TO NOTIFY IMPOSSIBLE CIRCLE
+                std::cout << "^^^^ incomplete LEFT BOT ^^^^\n";
+                rad_lbot = 0;
+                cen_lbot = {0,0};
             }
 
             // choosing larger radius for RIGHT BOT
             float rad_rbot = l_rhip > l_rankle ? l_rhip : l_rankle;
             // currRad.push_back(rad_rbot);
-            std::cout << "      --l_rhip: " << l_rhip << "\n";
-            std::cout << "l_rankle: " << l_rankle << "\n";
-            std::cout << "rad_rbot: " << rad_rbot << "\n";
+            // std::cout << "      --l_rhip: " << l_rhip << "\n";
+            // std::cout << "l_rankle: " << l_rankle << "\n";
+            // std::cout << "rad_rbot: " << rad_rbot << "\n";
 
             cv::Point cen_rbot = {(int)x_rknee, (int)y_rknee};
             // currCen.push_back(cen_rbot);
@@ -222,15 +263,24 @@ namespace op
                 // cv::addWeighted(currPose, opacity, currPose_output, 1 - opacity, 0, currPose_output); 
             // }
 
+            if( ((x_rknee == 0 && x_rankle == 0) || (x_rknee == 0 && x_rhip == 0) || (x_rankle == 0 && x_rhip == 0)) ||
+                   ((y_rknee == 0 && y_rankle == 0) || (y_rknee == 0 && y_rhip == 0) || (y_rankle == 0 && y_rhip == 0)) )
+            {
+                // SET RAD_RBOT AND CEN_RBOT TO 0 TO NOTIFY TO CHECK FOR UMATCHED POSES
+                std::cout << "^^^^ incomplete RIGHT BOT ^^^^\n";
+                rad_rbot = 0;
+                cen_rbot = {0,0};
+            }
+
             // can be different leg from lower_ankle_height because both legs are normally of the same/similar length
             float rad_bot = rad_lbot > rad_rbot ? rad_lbot : rad_rbot;
             float dia_leg = 2 * rad_bot;
             // float top_of_leg = bot_of_mid;
             // float bot_of_leg = top_of_leg + dia_leg;
 
-            std::cout << "      --rad_lbot: " << rad_lbot << "\n";
-            std::cout << "rad_rbot: " << rad_rbot << "\n";
-            std::cout << "rad_bot: " << rad_bot << "\n";
+            // std::cout << "      --rad_lbot: " << rad_lbot << "\n";
+            // std::cout << "rad_rbot: " << rad_rbot << "\n";
+            // std::cout << "rad_bot: " << rad_bot << "\n";
 
             ////////////////////*TO-DO: CONSIDER AVERAGE FLOOR LEVEL OF TWO ANKLES IF WITHIN 5% BOUND///////////////////////////
             // float higher_ankle_height = y_lankle < y_rankle ? y_lankle : y_rankle;
@@ -254,7 +304,7 @@ namespace op
 
             // std::cout << "(int)(cen_lmid.x + cen_rmid.x)/2 : " << (int)(cen_lmid.x + cen_rmid.x)/2 << "\n";
             //------------GET TOP and BOT OF LEG-------------//
-            std::cout << "  ---->GET TOP BOT LEG\n";
+            // std::cout << "  ---->GET TOP BOT LEG\n";
             float lower_ankle_height = y_lankle > y_rankle ? y_lankle : y_rankle;
             // int x_leg = (int) (y_lankle > y_rankle ? x_lankle : x_rankle);
 
@@ -265,9 +315,9 @@ namespace op
             float bot_of_leg = lower_ankle_height;
             float top_of_leg = bot_of_leg - dia_leg;
 
-            std::cout << "bot_of_leg: " << bot_of_leg << "\n";
-            std::cout << "top_of_leg: " << top_of_leg << "\n";
-            std::cout << "dia_leg: " << dia_leg << "\n";
+            // std::cout << "bot_of_leg: " << bot_of_leg << "\n";
+            // std::cout << "top_of_leg: " << top_of_leg << "\n";
+            // std::cout << "dia_leg: " << dia_leg << "\n";
 
             // if(i == 1)
 
@@ -294,7 +344,7 @@ namespace op
             // std::cout << "rad_bot: " << rad_bot << "\n";
             // std::cout << "dia_mid/2: " << dia_mid/2 << "\n";
             // std::cout << "rad_top: " << rad_top << "\n";
-                int cen_x = (int)(cen_lmid.x + cen_rmid.x)/2;
+                // int cen_x = (int)(cen_lmid.x + cen_rmid.x)/2;
 
                 // cv::circle(currPose, cv::Point(cen_x, (int) (top_of_leg + bot_of_leg)/2), rad_bot, cv::Scalar(255,255,0), -1, 8);
                 // cv::circle(currPose, cv::Point(cen_x, (int) (top_of_mid + bot_of_mid)/2), dia_mid/2, cv::Scalar(255,255,0), -1, 8);
@@ -662,7 +712,7 @@ namespace op
                     std::cout << "----------------got exact same pose-----------------\n";
                 }
 
-                float score = (0.3 * diff_cen) + (0.3 * diff_mid) + (0.2 * diff_top) + (0.1 * diff_bot);
+                float score = (3 * diff_cen) + (3 * diff_mid) + (2 * diff_top) + (1 * diff_bot);
                 std::cout << "->score: " << score << "\n";
                 score_stage1.push_back(score == 0 ? 10 : abs(1/score)); // not considering direction
 
@@ -673,6 +723,8 @@ namespace op
         // for(auto sc = 0; sc < score_stage1.size(); sc++)
         // {
         std::cout << "||||||||||||||||||SCORE STAGE 1||||||||||||||||||\n";
+
+        std::cout << "snowmen_sorted size: " << snowmen_sorted.size() << "\n";
         std::vector<int> scstage1_indices;
         auto score_index = 0;
             for(auto c = 0; c < snowmen_sorted.size(); c++)
@@ -690,12 +742,61 @@ namespace op
                 float score_max_temp = vNectFindMax(score_stage1_temp);
                 // std::cout << "-----------check 2---------\n";
                 int score_max_index = getMaxIndex(score_stage1_temp, score_max_temp);
+                std::cout << "..> --> score_stage1_temp.size(): " << score_stage1_temp.size() << "\n";
+                std::cout << "      -->> score_max_index: " << score_max_index << "\n";
                 scstage1_indices.push_back(score_max_index);
                 // std::cout << "-----------check 3---------\n";
             }
         std::cout << "---------\n";
         // std::cout << "---> prevSnowmen.at(scstage1_indices.at(i)): " << prevSnowmen.at(0).at(0) << "\n";  
         
+        // CHECK FOR UNMATCHED CURR SNOWMEN
+        std::vector<int> currSnow_unmatched;
+        std::vector<int> prevSnow_matched;
+        for(auto c = 0; c < scstage1_indices.size(); c++)
+        {
+            std::cout << "c: " << c << ", scstage1_indices.at(c): " << scstage1_indices.at(c) << "\n";
+            // IF -1, ADD THE CURR UNMATCHED SNOWMAN INDEX TO LIST
+            if(scstage1_indices.at(c) == -1)
+            {
+                currSnow_unmatched.push_back((int) c);
+                // continue;
+            }
+
+            // IF !-1, ADD THE INDEX TO LIST TO FIND UNMATCHED PREV SNOWMAN
+            else
+            {
+                prevSnow_matched.push_back((int) c);
+            }
+        }
+
+        std::vector<int> prevCheck_index;
+        for(auto i = 0; i < prevSnowmen.size(); i++) prevCheck_index.push_back(i);
+
+        std::vector<int> prevSnow_unmatched;
+
+        std::vector<int>::iterator it;
+        for(auto i = 0; i < prevSnow_matched.size(); i++)
+        {
+            it = std::find(prevCheck_index.begin(), prevCheck_index.end(), prevSnow_matched.at(i));
+            if(it == prevCheck_index.end())
+            {
+                prevSnow_unmatched.push_back((int) i);
+            }
+        }
+
+        if(prevSnow_unmatched.empty())
+        {
+            std::cout << "-----------------------------------------------------------------prevSnow_unmatched is empty!!!! Yay!\n";
+        }
+
+        if(currSnow_unmatched.empty())
+        {
+            std::cout << "-----------------------------------------------------------------currSnow_unmatched is empty!!!! Yay!\n";
+        }
+
+        std::cout << "--------------\n";
+        // SET NEW PREV SNOWMEN
         if(!prevSnowmen.empty())
         {
             for(auto i = 0; i < scstage1_indices.size(); i++)
@@ -703,7 +804,11 @@ namespace op
                 std::cout << "i: " << i << ", " << scstage1_indices.at(i) << "\n";
                 std::cout << "  global index: " << (i * (prevSnowmen.size())) + scstage1_indices.at(i) << "\n";
 
-                // std::cout << "---> prevSnowmen.at(scstage1_indices.at(i)): " << prevSnowmen.at(0).at(0) << "\n";
+                std::cout << "---> prevSnowmen.at(scstage1_indices.at(i)): " << prevSnowmen.at(0).at(0) << "\n";
+                std::cout << "---> prevSnowmen size: " << prevSnowmen.size() << "\n";
+                std::cout << "---> scstage1_indices size: " << scstage1_indices.size() << "\n";
+                std::cout << "---> scstage1_indices.at(i): " << scstage1_indices.at(i) << "\n";
+
 
                 int cen_x = prevSnowmen.at((int)scstage1_indices.at(i)).at(0);
                 // std::cout << "----->check 1\n";
@@ -723,18 +828,18 @@ namespace op
                 
                 // std::cout << "----->check 3\n";
                 // DRAW SNOWMAN ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                cv::circle(currPose, cv::Point(cen_x, (int) (top_of_head + bot_of_head)/2), rad_top, cv::Scalar(0,255,0), -1, 8);
-                cv::circle(currPose, cv::Point(cen_x, (int) (top_of_mid + bot_of_mid)/2), rad_mid, cv::Scalar(0,255,0), -1, 8);
-                cv::circle(currPose, cv::Point(cen_x, (int) (top_of_leg + bot_of_leg)/2), rad_bot, cv::Scalar(0,255,0), -1, 8);
+                // cv::circle(currPose, cv::Point(cen_x, (int) (top_of_head + bot_of_head)/2), rad_top, cv::Scalar(0,255,0), -1, 8);
+                // cv::circle(currPose, cv::Point(cen_x, (int) (top_of_mid + bot_of_mid)/2), rad_mid, cv::Scalar(0,255,0), -1, 8);
+                // cv::circle(currPose, cv::Point(cen_x, (int) (top_of_leg + bot_of_leg)/2), rad_bot, cv::Scalar(0,255,0), -1, 8);
 
-                // cv::circle(currPose, cv::Point(cen_x, (int)bot_of_leg), 5, cv::Scalar(0,255,255), -1, 8);
-                // cv::circle(currPose, cv::Point(cen_x, (int)top_of_leg), 5, cv::Scalar(0,255,255), -1, 8);
-                // cv::circle(currPose, cv::Point(cen_x, (int)bot_of_mid), 5, cv::Scalar(0,255,255), -1, 8);
-                // cv::circle(currPose, cv::Point(cen_x, (int)top_of_mid), 5, cv::Scalar(0,255,255), -1, 8);
-                // cv::circle(currPose, cv::Point(cen_x, (int)bot_of_head), 5, cv::Scalar(0,255,255), -1, 8);
-                // cv::circle(currPose, cv::Point(cen_x, (int)top_of_head), 5, cv::Scalar(0,255,255), -1, 8);
+                // // cv::circle(currPose, cv::Point(cen_x, (int)bot_of_leg), 5, cv::Scalar(0,255,255), -1, 8);
+                // // cv::circle(currPose, cv::Point(cen_x, (int)top_of_leg), 5, cv::Scalar(0,255,255), -1, 8);
+                // // cv::circle(currPose, cv::Point(cen_x, (int)bot_of_mid), 5, cv::Scalar(0,255,255), -1, 8);
+                // // cv::circle(currPose, cv::Point(cen_x, (int)top_of_mid), 5, cv::Scalar(0,255,255), -1, 8);
+                // // cv::circle(currPose, cv::Point(cen_x, (int)bot_of_head), 5, cv::Scalar(0,255,255), -1, 8);
+                // // cv::circle(currPose, cv::Point(cen_x, (int)top_of_head), 5, cv::Scalar(0,255,255), -1, 8);
 
-                cv::addWeighted(currPose, opacity, currPose_output, 1 - opacity, 0, currPose_output); 
+                // cv::addWeighted(currPose, opacity, currPose_output, 1 - opacity, 0, currPose_output); 
                 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -927,7 +1032,7 @@ namespace op
 		// // compare radius
 		// // depth depends on poses interdependency positions mainly, not where there are in the original image
 
-		// cv::imshow("currPose_output", currPose_output);
+		cv::imshow("currPose_output", currPose_output);
 
 
     }

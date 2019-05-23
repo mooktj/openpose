@@ -234,6 +234,8 @@ namespace op
          */
         TDatumsSP emplaceAndPop(const cv::Mat& cvMat);
 
+        TDatumsSP reEmplaceAndPop(TDatumsSP& tDatums, const cv::Mat& cvMat);
+
     private:
         const ThreadManagerMode mThreadManagerMode;
         ThreadManager<TDatumsSP> mThreadManager;
@@ -713,6 +715,44 @@ namespace op
             tDatumPtr = std::make_shared<TDatum>();
             // Fill datum
             tDatumPtr->cvInputData = cvMat;
+            // Emplace and pop
+            emplaceAndPop(datumsPtr);
+            // Return result
+            return datumsPtr;
+        }
+        catch (const std::exception& e)
+        {
+            error(e.what(), __LINE__, __FUNCTION__, __FILE__);
+            return TDatumsSP{};
+        }
+    }
+
+    template<typename TDatum, typename TDatums, typename TDatumsSP, typename TWorker>
+    TDatumsSP WrapperT<TDatum, TDatums, TDatumsSP, TWorker>::reEmplaceAndPop(TDatumsSP& tDatums, const cv::Mat& cvMat)
+    {
+        // std::cout << "wrapper:: emplaceAndPop(cvMat)" << "\n";
+        try
+        {
+            // Create new datum
+            auto datumsPtr = std::make_shared<std::vector<std::shared_ptr<TDatum>>>();
+            datumsPtr->emplace_back();
+            auto& tDatumPtr = datumsPtr->at(0);
+            tDatumPtr = std::make_shared<TDatum>();
+            // // Fill datum
+            tDatumPtr->cvInputData = cvMat;
+            // UPDATE SNOWMEN
+            tDatumPtr->prevSnowmen = tDatums->at(0)->snowmen;
+            // std::cout << "tDatumPtr->prevSnowmen size(): " << tDatumPtr->prevSnowmen.size() << "\n";
+
+            // SAVE THE INITIAL FLOORLEVEL POINT
+            tDatumPtr->floorLevelPt = tDatums->at(0)->floorLevelPt;
+
+            // UPDATE POSES ORIENTATIONS
+            tDatumPtr->prevOrientation = tDatums->at(0)->orientation;
+
+            // SAVE HEIGHT INITIAL REFERENCE FOR FUTURE ADDED POSES INITIALISATION
+            tDatumPtr->heightInitial = tDatums->at(0)->heightInitial;
+
             // Emplace and pop
             emplaceAndPop(datumsPtr);
             // Return result
